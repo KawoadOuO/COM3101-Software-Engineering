@@ -1,14 +1,15 @@
 package hsuadddrop;
-
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
-
-/**
- *
- * @author lukaon
- */
+import hsuadddrop.view.MainUI;
+import hsuadddrop.model.Model;
 public class Controller {
+    Model model;
+    MainUI view;
+    public void setModel(Model m) {
+            this.model = m;        
+       }
+    public void setView(MainUI v) {
+            this.view = v;        
+       }
+
     
 }

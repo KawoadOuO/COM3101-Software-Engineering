@@ -1,14 +1,10 @@
 package hsuadddrop;
+import hsuadddrop.model.Model;
 
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
-
-/**
- *
- * @author lukaon
- */
 public class HSUsystemMain {
+    Controller Controller = new Controller();
+    Model Model = new Model();
+    
+    
     
 }
