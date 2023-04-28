@@ -1,10 +1,24 @@
 package hsuadddrop.model;
 
 public class AddDropEntry {
+
     public enum Status {
-        PENDING,
-        APPROVED,
-        REJECTED
+        PENDING("Pending"),
+        APPROVED("Approved"),
+        REJECTED("Rejected");
+
+        private final String text;
+
+        Status(String text) {
+            this.text = text;
+        }
+
+        @Override
+        public String toString() {
+            return text;
+        }
+
+
     }
 
     private Student student;
@@ -22,6 +36,15 @@ public class AddDropEntry {
         this.sessionToAdd = sessionToAdd;
         this.sessionToDrop = sessionToDrop;
         this.status = Status.PENDING;
+    }
+    public AddDropEntry(Student student, Course courseToAdd, Course courseToDrop, Course.Session sessionToAdd, Course.Session sessionToDrop, Status status, String reason) {
+        this.student = student;
+        this.courseToAdd = courseToAdd;
+        this.courseToDrop = courseToDrop;
+        this.sessionToAdd = sessionToAdd;
+        this.sessionToDrop = sessionToDrop;
+        this.status = status;
+        this.reason = reason;
     }
 
     public Student getStudent() {
