@@ -14,7 +14,7 @@ import java.util.List;
 
 public class CourseDAO {
 
-    private Connection connection;
+    private final Connection connection;
 
     public CourseDAO(Connection connection) {
         this.connection = connection;
@@ -182,4 +182,19 @@ public class CourseDAO {
         return sessions;
     }
 
+
+    public Course getCourseByCodeSection(String courseCodeToAdd, String sessionToAdd) throws SQLException {
+        PreparedStatement statement = connection.prepareStatement("SELECT * FROM courses WHERE course_code = ? AND session_id = ?");
+        statement.setString(1, courseCodeToAdd);
+        statement.setString(2, sessionToAdd);
+        ResultSet rs = statement.executeQuery();
+        while (rs.next()) {
+            String courseCode = rs.getString("course_code");
+            String courseName = rs.getString("course_name");
+            Course course = new Course(courseName, courseCode);
+            course.setSessions(getSessionsForCourse(courseCode));
+            return course;
+        }
+        return null;
+    }
 }
