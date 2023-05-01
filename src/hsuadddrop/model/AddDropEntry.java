@@ -22,25 +22,19 @@ public class AddDropEntry {
     }
 
     private Student student;
-    private Course courseToAdd;
-    private Course courseToDrop;
-    private Course.Session sessionToAdd;
-    private Course.Session sessionToDrop;
+    private Session sessionToAdd;
+    private Session sessionToDrop;
     private Status status;
     private String reason;
 
-    public AddDropEntry(Student student, Course courseToAdd, Course courseToDrop, Course.Session sessionToAdd, Course.Session sessionToDrop) {
+    public AddDropEntry(Student student, Session sessionToAdd, Session sessionToDrop) {
         this.student = student;
-        this.courseToAdd = courseToAdd;
-        this.courseToDrop = courseToDrop;
         this.sessionToAdd = sessionToAdd;
         this.sessionToDrop = sessionToDrop;
         this.status = Status.PENDING;
     }
-    public AddDropEntry(Student student, Course courseToAdd, Course courseToDrop, Course.Session sessionToAdd, Course.Session sessionToDrop, Status status, String reason) {
+    public AddDropEntry(Student student, Session sessionToAdd, Session sessionToDrop, Status status, String reason) {
         this.student = student;
-        this.courseToAdd = courseToAdd;
-        this.courseToDrop = courseToDrop;
         this.sessionToAdd = sessionToAdd;
         this.sessionToDrop = sessionToDrop;
         this.status = status;
@@ -51,19 +45,13 @@ public class AddDropEntry {
         return student;
     }
 
-    public Course getCourseToAdd() {
-        return courseToAdd;
-    }
 
-    public Course getCourseToDrop() {
-        return courseToDrop;
-    }
 
-    public Course.Session getSessionToAdd() {
+    public Session getSessionToAdd() {
         return sessionToAdd;
     }
 
-    public Course.Session getSessionToDrop() {
+    public Session getSessionToDrop() {
         return sessionToDrop;
     }
 

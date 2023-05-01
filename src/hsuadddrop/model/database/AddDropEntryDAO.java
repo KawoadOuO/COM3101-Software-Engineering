@@ -2,6 +2,7 @@ package hsuadddrop.model.database;
 
 import hsuadddrop.model.AddDropEntry;
 import hsuadddrop.model.Course;
+import hsuadddrop.model.Session;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -25,20 +26,18 @@ public class AddDropEntryDAO {
             String studentId = rs.getString("student_id");
             String courseCodeToAdd = rs.getString("course_code_to_add");
             String courseCodeToDrop = rs.getString("course_code_to_drop");
-            String sessionToAdd = rs.getString("session_to_add");
-            String sessionToDrop = rs.getString("session_to_drop");
+            String sessionIDToAdd = rs.getString("session_to_add");
+            String sessionIDToDrop = rs.getString("session_to_drop");
             String status = rs.getString("status");
             String reason = rs.getString("reason");
 
-            Course courseToAdd = new CourseDAO(conn).getCourseByCodeSection(courseCodeToAdd, sessionToAdd);
-            Course courseToDrop = new CourseDAO(conn).getCourseByCodeSection(courseCodeToDrop, sessionToDrop);
+            Session sessionToAdd = new CourseDAO(conn).getSessionByID(courseCodeToAdd, sessionIDToAdd);
+            Session sessionToDrop = new CourseDAO(conn).getSessionByID(courseCodeToDrop, sessionIDToDrop);
 
             AddDropEntry entry = new AddDropEntry(
                     new StudentDAO(conn).getStudentByID(studentId),
-                    courseToAdd,
-                    courseToDrop,
-                    courseToAdd.getSessions().get(0),
-                    courseToDrop.getSessions().get(0),
+                    sessionToAdd,
+                    sessionToDrop,
                     AddDropEntry.Status.valueOf(status),
                     reason
             );
@@ -48,24 +47,25 @@ public class AddDropEntryDAO {
     }
 
     public void addEntry(AddDropEntry entry) throws SQLException {
-        PreparedStatement stmt = conn.prepareStatement("INSERT INTO add_drop_entries (student_id, course_code_to_add, course_code_to_drop, session_to_add, session_to_drop) VALUES (?, ?, ?, ?, ?)");
+        PreparedStatement stmt = conn.prepareStatement("INSERT INTO add_drop_entries(student_id, course_code_to_add, course_code_to_drop, session_to_add, session_to_drop, status, reason) VALUES (?, ?, ?, ?, ?, ?, ?)");
         stmt.setString(1, entry.getStudent().getStudentID());
-        stmt.setString(2, entry.getCourseToAdd().getCourseCode());
-        stmt.setString(3, entry.getCourseToDrop().getCourseCode());
+        stmt.setString(2, entry.getSessionToAdd().getCourseCode());
+        stmt.setString(3, entry.getSessionToDrop().getCourseCode());
         stmt.setString(4, entry.getSessionToAdd().getSessionID());
         stmt.setString(5, entry.getSessionToDrop().getSessionID());
+        stmt.setString(6, entry.getStatus().toString());
+        stmt.setString(7, entry.getReason());
         stmt.executeUpdate();
     }
 
     public void updateEntryStatus(AddDropEntry entry) throws SQLException {
-        PreparedStatement stmt = conn.prepareStatement("UPDATE add_drop_entries SET status = ?, reason = ? WHERE student_id = ? AND course_code_to_add = ? AND course_code_to_drop = ? AND session_to_add = ? AND session_to_drop = ?");
+        PreparedStatement stmt = conn.prepareStatement("UPDATE add_drop_entries SET status = ? WHERE student_id = ? AND course_code_to_add = ? AND course_code_to_drop = ? AND session_to_add = ? AND session_to_drop = ?");
         stmt.setString(1, entry.getStatus().toString());
-        stmt.setString(2, entry.getReason());
-        stmt.setString(3, entry.getStudent().getStudentID());
-        stmt.setString(4, entry.getCourseToAdd().getCourseCode());
-        stmt.setString(5, entry.getCourseToDrop().getCourseCode());
-        stmt.setString(6, entry.getSessionToAdd().getSessionID());
-        stmt.setString(7, entry.getSessionToDrop().getSessionID());
+        stmt.setString(2, entry.getStudent().getStudentID());
+        stmt.setString(3, entry.getSessionToAdd().getCourseCode());
+        stmt.setString(4, entry.getSessionToDrop().getCourseCode());
+        stmt.setString(5, entry.getSessionToAdd().getSessionID());
+        stmt.setString(6, entry.getSessionToDrop().getSessionID());
         stmt.executeUpdate();
     }
 }
