@@ -4,6 +4,8 @@
  */
 package hsuadddrop.view;
 
+import javax.swing.*;
+
 /**
  *
  * @author lukaon
@@ -41,6 +43,14 @@ public class MainUI extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    public void displayErrorMessage(String s) {
+        JOptionPane.showMessageDialog(this, s);
+    }
+
+    public void displaySuccessMessage(String s) {
+        JOptionPane.showConfirmDialog(this, s);
+    }
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
