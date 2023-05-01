@@ -1,5 +1,6 @@
 package hsuadddrop.model.database;
 
+import hsuadddrop.model.Session;
 import hsuadddrop.model.Student;
 
 import java.sql.*;
@@ -59,5 +60,27 @@ public class StudentDAO {
             students.add(new Student(studentID, gender, studentName));
         }
         return students;
+    }
+
+    public List<Session> getRegisteredSessions(Student student) {
+        return new CourseDAO(conn).getRegisteredSessions(student);
+    }
+
+    public void addSession(Student student, Session sessionToAdd) throws SQLException {
+        PreparedStatement stmt = conn.prepareStatement("INSERT INTO registrations(student_id, course_code, session_id) VALUES (?, ?, ?)");
+        stmt.setString(1, student.getStudentID());
+        stmt.setString(2, sessionToAdd.getCourseCode());
+        stmt.setString(3, sessionToAdd.getSessionID());
+        stmt.executeQuery();
+
+    }
+
+    public void dropSession(Student student, Session sessionToDrop) throws SQLException {
+        PreparedStatement stmt = conn.prepareStatement("DELETE FROM registrations WHERE student_id = ? AND course_code = ? AND session_id = ?");
+        stmt.setString(1, student.getStudentID());
+        stmt.setString(2, sessionToDrop.getCourseCode());
+        stmt.setString(3, sessionToDrop.getSessionID());
+        stmt.executeQuery();
+
     }
 }

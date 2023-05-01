@@ -1,9 +1,6 @@
 package hsuadddrop.model.database;
 
-import hsuadddrop.model.Course;
-import hsuadddrop.model.Session;
-import hsuadddrop.model.TimeOfDay;
-import hsuadddrop.model.Weekday;
+import hsuadddrop.model.*;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -120,9 +117,10 @@ public class CourseDAO {
             String sessionID = rs.getString("session_id");
             String courseCode = rs.getString("course_code");
             String teacher = rs.getString("teacher");
+            int capacity = rs.getInt("capacity");
             Weekday weekday = Weekday.valueOf(rs.getString("weekday"));
             TimeOfDay time = TimeOfDay.valueOf(rs.getString("time"));
-            Session session = new Session(sessionID, courseCode, teacher, weekday, time);
+            Session session = new Session(sessionID, courseCode, teacher, capacity, weekday, time);
             sessions.add(session);
         }
 
@@ -174,9 +172,10 @@ public class CourseDAO {
         while (rs.next()) {
             String sessionID = rs.getString("session_id");
             String teacher = rs.getString("teacher");
+            int capacity = rs.getInt("capacity");
             Weekday weekday = Weekday.valueOf(rs.getString("weekday"));
             TimeOfDay time = TimeOfDay.valueOf(rs.getString("time"));
-            Session session = new Session(sessionID, courseCode, teacher, weekday, time);
+            Session session = new Session(sessionID, courseCode, teacher, capacity, weekday, time);
             sessions.add(session);
         }
 
@@ -207,10 +206,46 @@ public class CourseDAO {
         ResultSet rs = statement.executeQuery();
         while (rs.next()) {
             String teacher = rs.getString("teacher");
+            int capacity = rs.getInt("capacity");
             Weekday weekday = Weekday.valueOf(rs.getString("weekday"));
             TimeOfDay time = TimeOfDay.valueOf(rs.getString("time"));
-            return new Session(sessionID, courseCode, teacher, weekday, time);
+            return new Session(sessionID, courseCode, teacher, capacity , weekday, time);
         }
         return null;
+    }
+
+    public List<Session> getRegisteredSessions(Student student) {
+        List<Session> sessions = new ArrayList<>();
+        try {
+            PreparedStatement statement = connection.prepareStatement("SELECT * FROM registrations WHERE student_id = ?");
+            statement.setString(1, student.getStudentID());
+            ResultSet rs = statement.executeQuery();
+            while (rs.next()) {
+                String sessionID = rs.getString("session_id");
+                String courseCode = rs.getString("course_code");
+                Session session = getSessionByID(courseCode, sessionID);
+                sessions.add(session);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return sessions;
+    }
+
+    public List<Student> getEnrolledStudents(Session session) {
+        List<Student> students = new ArrayList<>();
+        try {
+            PreparedStatement statement = connection.prepareStatement("SELECT * FROM registrations WHERE session_id = ?");
+            statement.setString(1, session.getSessionID());
+            ResultSet rs = statement.executeQuery();
+            while (rs.next()) {
+                String studentID = rs.getString("student_id");
+                Student student = new StudentDAO(connection).getStudentByID(studentID);
+                students.add(student);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return students;
     }
 }

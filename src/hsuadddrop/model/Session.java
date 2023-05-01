@@ -1,5 +1,9 @@
 package hsuadddrop.model;
 
+import hsuadddrop.model.database.CourseDAO;
+import hsuadddrop.model.database.DatabaseConnection;
+
+import java.util.Collection;
 import java.util.List;
 
 public class Session {
@@ -10,10 +14,17 @@ public class Session {
     private TimeOfDay time;
     private List<Student> students;
 
-    public Session(String sessionID, String courseCode, String teacher, Weekday weekday, TimeOfDay time) {
+    public int getCapacity() {
+        return capacity;
+    }
+
+    private int capacity;
+
+    public Session(String sessionID, String courseCode, String teacher, int capacity, Weekday weekday, TimeOfDay time) {
         this.sessionID = sessionID;
         this.courseCode = courseCode;
         this.teacher = teacher;
+        this.capacity = capacity;
         this.weekday = weekday;
         this.time = time;
     }
@@ -62,5 +73,9 @@ public class Session {
 
     public String getCourseCode() {
         return courseCode;
+    }
+
+    public List<Student> getEnrolledStudents() {
+        return new CourseDAO(DatabaseConnection.getInstance().getConnection()).getEnrolledStudents(this);
     }
 }
