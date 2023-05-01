@@ -1,4 +1,12 @@
 package hsuadddrop.model;
+
+import hsuadddrop.model.database.CourseDAO;
+import hsuadddrop.model.database.DatabaseConnection;
+import hsuadddrop.model.database.StudentDAO;
+
+
+import java.util.List;
+
 public class Student {
     private String studentID;
     private String gender;
@@ -37,5 +45,17 @@ public class Student {
     @Override
     public String toString() {
         return "Student{" + "studentID=" + studentID + ", gender=" + gender + ", studentName=" + studentName + '}';
+    }
+
+    public List<Session> getRegisteredSessions() {
+        return new StudentDAO(DatabaseConnection.getInstance().getConnection()).getRegisteredSessions(this);
+    }
+
+    public void addSession(Session sessionToAdd) {
+        new StudentDAO(DatabaseConnection.getInstance().getConnection()).addSession(this, sessionToAdd);
+    }
+
+    public void dropSession(Session sessionToDrop) {
+        new StudentDAO(DatabaseConnection.getInstance().getConnection()).dropSession(this, sessionToDrop);
     }
 }
