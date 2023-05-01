@@ -1,7 +1,7 @@
 package hsuadddrop.model.database;
 
 import hsuadddrop.model.Course;
-import hsuadddrop.model.Course.Session;
+import hsuadddrop.model.Session;
 import hsuadddrop.model.TimeOfDay;
 import hsuadddrop.model.Weekday;
 
@@ -118,10 +118,11 @@ public class CourseDAO {
         List<Session> sessions = new ArrayList<>();
         while (rs.next()) {
             String sessionID = rs.getString("session_id");
+            String courseCode = rs.getString("course_code");
             String teacher = rs.getString("teacher");
             Weekday weekday = Weekday.valueOf(rs.getString("weekday"));
             TimeOfDay time = TimeOfDay.valueOf(rs.getString("time"));
-            Session session = new Session(sessionID, teacher, weekday, time);
+            Session session = new Session(sessionID, courseCode, teacher, weekday, time);
             sessions.add(session);
         }
 
@@ -175,7 +176,7 @@ public class CourseDAO {
             String teacher = rs.getString("teacher");
             Weekday weekday = Weekday.valueOf(rs.getString("weekday"));
             TimeOfDay time = TimeOfDay.valueOf(rs.getString("time"));
-            Session session = new Course.Session(sessionID, teacher, weekday, time);
+            Session session = new Session(sessionID, courseCode, teacher, weekday, time);
             sessions.add(session);
         }
 
@@ -194,6 +195,21 @@ public class CourseDAO {
             Course course = new Course(courseName, courseCode);
             course.setSessions(getSessionsForCourse(courseCode));
             return course;
+        }
+        return null;
+    }
+
+    public Session getSessionByID(String courseCode, String sessionID) throws SQLException {
+        String sql = "SELECT * FROM courses WHERE course_code = ? AND session_id = ?";
+        PreparedStatement statement = connection.prepareStatement(sql);
+        statement.setString(1, courseCode);
+        statement.setString(2, sessionID);
+        ResultSet rs = statement.executeQuery();
+        while (rs.next()) {
+            String teacher = rs.getString("teacher");
+            Weekday weekday = Weekday.valueOf(rs.getString("weekday"));
+            TimeOfDay time = TimeOfDay.valueOf(rs.getString("time"));
+            return new Session(sessionID, courseCode, teacher, weekday, time);
         }
         return null;
     }
