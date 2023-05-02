@@ -81,4 +81,18 @@ public class StaffDAO {
         stmt.setString(1, staff.getStaffID());
         stmt.executeUpdate();
     }
+
+    public Staff getStaff(String username) throws SQLException {
+        PreparedStatement stmt = conn.prepareStatement("SELECT * FROM staff WHERE staff_id = ?");
+        stmt.setString(1, username);
+        ResultSet rs = stmt.executeQuery();
+        if (rs.next()) {
+            String staffId = rs.getString("staff_id");
+            String name = rs.getString("name");
+            String password = rs.getString("password");
+            return new Staff(staffId, name, password);
+        } else {
+            return null;
+        }
+    }
 }

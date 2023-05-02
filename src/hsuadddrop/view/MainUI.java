@@ -4,6 +4,8 @@
  */
 package hsuadddrop.view;
 
+import javax.swing.*;
+
 /**
  *
  * @author lukaon
@@ -224,4 +226,12 @@ public class MainUI extends javax.swing.JFrame {
     private javax.swing.JLabel label1_title;
     private javax.swing.JPanel loginPanel;
     // End of variables declaration//GEN-END:variables
+
+    public void displayErrorMessage(String s) {
+        JOptionPane.showMessageDialog(this, s);
+    }
+
+    public void displaySuccessMessage(String s) {
+        JOptionPane.showMessageDialog(this, s);
+    }
 }

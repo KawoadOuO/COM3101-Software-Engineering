@@ -3,9 +3,11 @@ package hsuadddrop;
 
 import hsuadddrop.model.AddDropEntry;
 import hsuadddrop.model.Session;
+import hsuadddrop.model.Staff;
 import hsuadddrop.model.Student;
 import hsuadddrop.model.database.AddDropEntryDAO;
 import hsuadddrop.model.database.DatabaseConnection;
+import hsuadddrop.model.database.StaffDAO;
 import hsuadddrop.view.MainUI;
 
 import java.sql.SQLException;
@@ -86,6 +88,24 @@ public class Controller {
             // show success message
             view.displaySuccessMessage("Add/drop entry created successfully");
             return true;
+       }
+
+       public boolean login(String username, String password) {
+            // check credentials in database
+            // if valid, return true
+            // else return false
+           try {
+
+           Staff loginStaff = new StaffDAO(DatabaseConnection.getInstance().getConnection()).getStaff(username);
+              if (loginStaff != null) {
+                if (loginStaff.getPassword().equals(password)) {
+                     return true;
+                }
+              }
+           } catch (SQLException e) {
+               throw new RuntimeException(e);
+           }
+           return false;
        }
     
 }
