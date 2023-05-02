@@ -6,8 +6,7 @@ import hsuadddrop.model.database.DatabaseConnection;
 import hsuadddrop.model.database.StudentDAO;
 import hsuadddrop.view.MainUI;
 
-import java.sql.Connection;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.List;
 
 public class HSUsystemMain {
@@ -44,14 +43,13 @@ public class HSUsystemMain {
 //            }
 //        });
         Connection connection = DatabaseConnection.getInstance().getConnection();
-        StudentDAO studentDAO = new StudentDAO(connection);
         try {
-            List<Student> students = studentDAO.getAllStudents();
+            List<Student> students = new StudentDAO(connection).getAllStudents();
             for (Student student : students) {
                 System.out.println(student);
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
     }
 }

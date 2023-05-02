@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="sqlite-jdbc-3.36.0.3">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../../OneDrive - The Hang Seng University of Hong Kong/COM3101/sqlite-jdbc-3.36.0.3.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
