@@ -15,7 +15,7 @@ public class StudentDAO {
     }
 
     public void addStudent(Student student) throws SQLException {
-        PreparedStatement stmt = conn.prepareStatement("INSERT INTO students(student_id, gender, student_name) VALUES (?, ?, ?)");
+        PreparedStatement stmt = conn.prepareStatement("INSERT INTO student(student_id, gender, name) VALUES (?, ?, ?)");
         stmt.setString(1, student.getStudentID());
         stmt.setString(2, student.getGender());
         stmt.setString(3, student.getStudentName());
@@ -23,7 +23,7 @@ public class StudentDAO {
     }
 
     public void updateStudent(Student student) throws SQLException {
-        PreparedStatement stmt = conn.prepareStatement("UPDATE students SET gender = ?, student_name = ? WHERE student_id = ?");
+        PreparedStatement stmt = conn.prepareStatement("UPDATE student SET gender = ?, name = ? WHERE student_id = ?");
         stmt.setString(1, student.getGender());
         stmt.setString(2, student.getStudentName());
         stmt.setString(3, student.getStudentID());
@@ -31,18 +31,18 @@ public class StudentDAO {
     }
 
     public void deleteStudent(String studentID) throws SQLException {
-        PreparedStatement stmt = conn.prepareStatement("DELETE FROM students WHERE student_id = ?");
+        PreparedStatement stmt = conn.prepareStatement("DELETE FROM student WHERE student_id = ?");
         stmt.setString(1, studentID);
         stmt.executeUpdate();
     }
 
     public Student getStudentByID(String studentID) throws SQLException {
-        PreparedStatement stmt = conn.prepareStatement("SELECT * FROM students WHERE student_id = ?");
+        PreparedStatement stmt = conn.prepareStatement("SELECT * FROM student WHERE student_id = ?");
         stmt.setString(1, studentID);
         ResultSet rs = stmt.executeQuery();
         if (rs.next()) {
             String gender = rs.getString("gender");
-            String studentName = rs.getString("student_name");
+            String studentName = rs.getString("name");
             return new Student(studentID, gender, studentName);
         } else {
             return null;
@@ -52,11 +52,11 @@ public class StudentDAO {
     public List<Student> getAllStudents() throws SQLException {
         List<Student> students = new ArrayList<>();
         Statement stmt = conn.createStatement();
-        ResultSet rs = stmt.executeQuery("SELECT * FROM students");
+        ResultSet rs = stmt.executeQuery("SELECT * FROM student");
         while (rs.next()) {
             String studentID = rs.getString("student_id");
             String gender = rs.getString("gender");
-            String studentName = rs.getString("student_name");
+            String studentName = rs.getString("name");
             students.add(new Student(studentID, gender, studentName));
         }
         return students;
@@ -67,7 +67,7 @@ public class StudentDAO {
     }
 
     public void addSession(Student student, Session sessionToAdd) throws SQLException {
-        PreparedStatement stmt = conn.prepareStatement("INSERT INTO registrations(student_id, course_code, session_id) VALUES (?, ?, ?)");
+        PreparedStatement stmt = conn.prepareStatement("INSERT INTO enrollment(student_id, course_code, session_id) VALUES (?, ?, ?)");
         stmt.setString(1, student.getStudentID());
         stmt.setString(2, sessionToAdd.getCourseCode());
         stmt.setString(3, sessionToAdd.getSessionID());
@@ -76,7 +76,7 @@ public class StudentDAO {
     }
 
     public void dropSession(Student student, Session sessionToDrop) throws SQLException {
-        PreparedStatement stmt = conn.prepareStatement("DELETE FROM registrations WHERE student_id = ? AND course_code = ? AND session_id = ?");
+        PreparedStatement stmt = conn.prepareStatement("DELETE FROM enrollment WHERE student_id = ? AND course_code = ? AND session_id = ?");
         stmt.setString(1, student.getStudentID());
         stmt.setString(2, sessionToDrop.getCourseCode());
         stmt.setString(3, sessionToDrop.getSessionID());

@@ -1,4 +1,5 @@
 package hsuadddrop.model.database;
+import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -9,11 +10,18 @@ public class DatabaseConnection {
 
     private DatabaseConnection() {
         try {
-            String url = "jdbc:mysql://localhost/mydatabase";
-            String user = "myuser";
-            String password = "mypassword";
-            connection = DriverManager.getConnection(url, user, password);
-        } catch (SQLException e) {
+            // Load the SQLite JDBC driver
+            Class.forName("org.sqlite.JDBC");
+            // check db file exists
+            File dbFile = new File("./adddrop.db");
+            if (!dbFile.exists()) {
+                System.err.println("Database file not found.");
+                System.exit(1);
+            }
+//             Connect to the SQLite database file
+            String url = "jdbc:sqlite:./adddrop.db";
+            connection = DriverManager.getConnection(url);
+        } catch (ClassNotFoundException | SQLException e) {
             e.printStackTrace();
         }
     }
