@@ -1,10 +1,7 @@
 package hsuadddrop;
 
 
-import hsuadddrop.model.AddDropEntry;
-import hsuadddrop.model.Session;
-import hsuadddrop.model.Staff;
-import hsuadddrop.model.Student;
+import hsuadddrop.model.*;
 import hsuadddrop.model.database.AddDropEntryDAO;
 import hsuadddrop.model.database.DatabaseConnection;
 import hsuadddrop.model.database.StaffDAO;
@@ -25,7 +22,7 @@ public class Controller {
           try {
               List<AddDropEntry> entries =  new AddDropEntryDAO(DatabaseConnection.getInstance().getConnection()).getAllEntries();
               for (AddDropEntry entry : entries) {
-                  if (entry.getStatus() != AddDropEntry.Status.PENDING) {
+                  if (entry.getStatus() != Status.PENDING) {
                       continue;
                   }
                   Student student = entry.getStudent();
@@ -34,12 +31,12 @@ public class Controller {
                   if (sessionToAdd != null && sessionToDrop != null) {
                       // add/drop can fail if the target session is full
                       if (sessionToAdd.getEnrolledStudents().size() >= sessionToAdd.getCapacity()) {
-                          entry.setStatus(AddDropEntry.Status.REJECTED);
+                          entry.setStatus(Status.REJECTED);
                           entry.setReason("Session is full");
                       } else {
                           student.addSession(sessionToAdd);
                           student.dropSession(sessionToDrop);
-                          entry.setStatus(AddDropEntry.Status.APPROVED);
+                          entry.setStatus(Status.APPROVED);
                       }
                   } else if (sessionToAdd == null && sessionToDrop != null) {
                       // it is always possible to drop a session
@@ -47,11 +44,11 @@ public class Controller {
                   } else if (sessionToAdd != null && sessionToDrop == null) {
                       // check the capacity only
                         if (sessionToAdd.getEnrolledStudents().size() >= sessionToAdd.getCapacity()) {
-                            entry.setStatus(AddDropEntry.Status.REJECTED);
+                            entry.setStatus(Status.REJECTED);
                             entry.setReason("Session is full");
                         } else {
                             student.addSession(sessionToAdd);
-                            entry.setStatus(AddDropEntry.Status.APPROVED);
+                            entry.setStatus(Status.APPROVED);
                         }
                   }
               }

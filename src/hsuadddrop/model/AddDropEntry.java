@@ -2,25 +2,6 @@ package hsuadddrop.model;
 
 public class AddDropEntry {
 
-    public enum Status {
-        PENDING("Pending"),
-        APPROVED("Approved"),
-        REJECTED("Rejected");
-
-        private final String text;
-
-        Status(String text) {
-            this.text = text;
-        }
-
-        @Override
-        public String toString() {
-            return text;
-        }
-
-
-    }
-
     private Student student;
     private Session sessionToAdd;
     private Session sessionToDrop;

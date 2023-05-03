@@ -39,10 +39,11 @@ CREATE TABLE add_drop_entry
 (
     entry_id            INTEGER     NOT NULL PRIMARY KEY AUTOINCREMENT,
     student_id          VARCHAR(10) NOT NULL,
-    course_code_to_add  VARCHAR(10) NOT NULL,
-    session_id_to_add   VARCHAR(10) NOT NULL,
-    course_code_to_drop VARCHAR(10) NOT NULL,
-    session_id_to_drop  VARCHAR(10) NOT NULL,
+    course_code_to_add  VARCHAR(10),
+    session_id_to_add   VARCHAR(10),
+    course_code_to_drop VARCHAR(10),
+    session_id_to_drop  VARCHAR(10),
+    status              VARCHAR(10) NOT NULL DEFAULT 'Pending',
     FOREIGN KEY (student_id) REFERENCES student (student_id) ON DELETE CASCADE,
     FOREIGN KEY (course_code_to_add, session_id_to_add) REFERENCES session (course_code, session_id) ON DELETE CASCADE,
     FOREIGN KEY (course_code_to_drop, session_id_to_drop) REFERENCES session (course_code, session_id) ON DELETE CASCADE
@@ -110,9 +111,9 @@ VALUES ('A001', 'COM1000', 'L01'),
 -- Insert data into the add_drop_entry table
 INSERT INTO add_drop_entry (student_id,
                             course_code_to_add,
-                            session_id_to_add,
+                            session_to_add,
                             course_code_to_drop,
-                            session_id_to_drop)
+                            session_to_drop)
 VALUES ('A001', 'COM1000', 'L02', 'COM1000', 'L01'),
        ('A002', 'COM1000', 'L02', 'COM1000', 'L01'),
        ('A003', 'COM2001', 'L01', 'COM1000', 'L01');

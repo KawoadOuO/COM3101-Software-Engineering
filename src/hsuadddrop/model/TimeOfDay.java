@@ -15,6 +15,15 @@ public enum TimeOfDay {
 
     private final String displayName;
 
+    public static TimeOfDay fromDisplayName(String displayName) {
+        for (TimeOfDay timeOfDay : TimeOfDay.values()) {
+            if (timeOfDay.displayName.equals(displayName)) {
+                return timeOfDay;
+            }
+        }
+        throw new IllegalArgumentException("No enum constant with display name: " + displayName);
+    }
+
     TimeOfDay(String displayName) {
         this.displayName = displayName;
     }

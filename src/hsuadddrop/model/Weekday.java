@@ -10,7 +10,7 @@ package hsuadddrop.model;
  */
 public enum Weekday {
     MONDAY("Mon"),
-    TUEDAY("Tue"),
+    TUESDAY("Tue"),
     WEDNESDAY("Wed"),
     THURSDAY("Thu"),
     FRIDAY("Fri"),
@@ -20,6 +20,15 @@ public enum Weekday {
     
     Weekday(String displayName) {
         this.displayName = displayName;
+    }
+
+    public static Weekday fromDisplayName(String displayName) {
+        for (Weekday weekday : Weekday.values()) {
+            if (weekday.displayName.equals(displayName)) {
+                return weekday;
+            }
+        }
+        throw new IllegalArgumentException("No enum constant with display name: " + displayName);
     }
     
     @Override

@@ -3,6 +3,7 @@ package hsuadddrop.model.database;
 import hsuadddrop.model.AddDropEntry;
 import hsuadddrop.model.Course;
 import hsuadddrop.model.Session;
+import hsuadddrop.model.Status;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -19,7 +20,7 @@ public class AddDropEntryDAO {
     }
 
     public List<AddDropEntry> getAllEntries() throws SQLException {
-        PreparedStatement stmt = conn.prepareStatement("SELECT * FROM add_drop_entries");
+        PreparedStatement stmt = conn.prepareStatement("SELECT * FROM add_drop_entry");
         ResultSet rs = stmt.executeQuery();
         List<AddDropEntry> entries = new ArrayList<>();
         while (rs.next()) {
@@ -38,7 +39,7 @@ public class AddDropEntryDAO {
                     new StudentDAO(conn).getStudentByID(studentId),
                     sessionToAdd,
                     sessionToDrop,
-                    AddDropEntry.Status.valueOf(status),
+                    Status.valueOf(status),
                     reason
             );
             entries.add(entry);
@@ -47,7 +48,7 @@ public class AddDropEntryDAO {
     }
 
     public void addEntry(AddDropEntry entry) throws SQLException {
-        PreparedStatement stmt = conn.prepareStatement("INSERT INTO add_drop_entries(student_id, course_code_to_add, course_code_to_drop, session_to_add, session_to_drop, status, reason) VALUES (?, ?, ?, ?, ?, ?, ?)");
+        PreparedStatement stmt = conn.prepareStatement("INSERT INTO add_drop_entry(student_id, course_code_to_add, course_code_to_drop, session_to_add, session_to_drop, status, reason) VALUES (?, ?, ?, ?, ?, ?, ?)");
         stmt.setString(1, entry.getStudent().getStudentID());
         stmt.setString(2, entry.getSessionToAdd().getCourseCode());
         stmt.setString(3, entry.getSessionToDrop().getCourseCode());
@@ -59,7 +60,7 @@ public class AddDropEntryDAO {
     }
 
     public void updateEntryStatus(AddDropEntry entry) throws SQLException {
-        PreparedStatement stmt = conn.prepareStatement("UPDATE add_drop_entries SET status = ? WHERE student_id = ? AND course_code_to_add = ? AND course_code_to_drop = ? AND session_to_add = ? AND session_to_drop = ?");
+        PreparedStatement stmt = conn.prepareStatement("UPDATE add_drop_entry SET status = ? WHERE student_id = ? AND course_code_to_add = ? AND course_code_to_drop = ? AND session_to_add = ? AND session_to_drop = ?");
         stmt.setString(1, entry.getStatus().toString());
         stmt.setString(2, entry.getStudent().getStudentID());
         stmt.setString(3, entry.getSessionToAdd().getCourseCode());
