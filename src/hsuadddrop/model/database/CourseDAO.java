@@ -131,21 +131,23 @@ public class CourseDAO {
         stmt.setString(1, courseCode);
         stmt.setString(2, sessionID);
         ResultSet rs = stmt.executeQuery();
+        List<Course> courses = new ArrayList<>();
         while (rs.next()) {
             courseCode = rs.getString("course_code");
             String courseName = rs.getString("course_name");
             Course course = new Course(courseName, courseCode);
+            
             course.setSessions(new SessionDAO(connection).getSessionsForCourse(courseCode));
-            return course;
+            courses.add(course);
         }
         return null;
+        
     }
 
     public List<Student> getEnrolledStudents(Session session) {
         List<Student> students = new ArrayList<>();
         try {
             PreparedStatement stmt = connection.prepareStatement("SELECT * FROM enrollment");
-            stmt.setString(1, session.getSessionID());
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 String studentID = rs.getString("student_id");

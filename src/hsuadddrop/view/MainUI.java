@@ -247,7 +247,11 @@ public class MainUI extends javax.swing.JFrame {
     }//GEN-LAST:event_dt_adddropActionPerformed
 
     private void bt_checkcourseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_checkcourseActionPerformed
-
+        try {
+            controller.showCourseInfo();
+        } catch (SQLException ex) {
+            Logger.getLogger(MainUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_bt_checkcourseActionPerformed
 
     private void bt_logoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_logoutActionPerformed
@@ -383,58 +387,9 @@ public class MainUI extends javax.swing.JFrame {
     public void displaySuccessMessage(String message) {
         JOptionPane.showMessageDialog(rootPane, message);
     }
-
-    /*
-    public void clickAdd(JFrame frame) {
-        boolean addModuleDisplayed = false;
-        if (addModuleDisplayed) {
-        }
-        while (true) {
-            JPanel panel = new JPanel(new BorderLayout(5, 5));
-            JPanel label = new JPanel(new GridLayout(0, 1, 2, 2));
-            label.add(new JLabel("Course Code - Session", SwingConstants.RIGHT));
-            label.add(new JLabel("eg. COM1000-L01", SwingConstants.RIGHT));
-            panel.add(label, BorderLayout.WEST);
-
-            JPanel controls = new JPanel(new GridLayout(0, 1, 2, 2));
-            JTextField tf_input = new JTextField();
-            tf_input.setColumns(20);
-            controls.add(tf_input);
-            panel.add(controls, BorderLayout.CENTER);
-
-            int result = JOptionPane.showConfirmDialog(frame, panel, "Add Module", JOptionPane.OK_CANCEL_OPTION);
-
-            if (result == JOptionPane.CLOSED_OPTION) {
-                displayErrorMessage("Add Module Cancelled");
-                break;
-            }
-
-            if (result == JOptionPane.CANCEL_OPTION) {
-                displayErrorMessage("Add Module Cancelled");
-                break;
-            }
-            if (result == JOptionPane.OK_OPTION) {
-                String input = tf_input.getText();
-                String[] details = input.split("-");
-                String courseCode = details[0];
-                String session = details[1];
-                if (input.isEmpty() || session.isEmpty()||courseCode.isEmpty()) {
-                    displayErrorMessage("Can't be empty");
-                    continue;
-                } else {
-
-                    addModuleDisplayed = true;
-                    displaySuccessMessage("Add Module Successfully for " + getStudentID() + "\nModule Code: " + courseCode + "\nSession: " + session);
-                    break;
-                }
-            }
-        }
-    }
-     */
     
-
     public String getStudentID() {
-        String studentid = tf_studentid.getText();
+        String studentid = tf_studentid.getText().toUpperCase();
         return studentid;
     }
 }
