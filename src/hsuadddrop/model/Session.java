@@ -2,8 +2,8 @@ package hsuadddrop.model;
 
 import hsuadddrop.model.database.CourseDAO;
 import hsuadddrop.model.database.DatabaseConnection;
+import java.util.ArrayList;
 
-import java.util.Collection;
 import java.util.List;
 
 public class Session {
@@ -27,6 +27,7 @@ public class Session {
         this.capacity = capacity;
         this.weekday = weekday;
         this.time = time;
+        this.students = new ArrayList<Student>();
     }
     public void addStudent(Student student) {
         students.add(student);
@@ -78,4 +79,13 @@ public class Session {
     public List<Student> getEnrolledStudents() {
         return new CourseDAO(DatabaseConnection.getInstance().getConnection()).getEnrolledStudents(this);
     }
+    
+    
+    
+    @Override
+    public String toString() {
+        return "Session {" + "courseCode = " + courseCode+ ", sessionID = " + sessionID + ",teacher = " + teacher+ ", weekday = " + weekday +
+                ", time = " + time+ ", students = " + students + '}';
+    }
+
 }

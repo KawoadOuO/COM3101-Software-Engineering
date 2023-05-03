@@ -34,6 +34,10 @@ public class Staff {
         this.Password = Password;
     }
     
-    
+    @Override
+    public String toString() {
+        return "Staff {" + "staffID=" + staffID + ", Name=" + Name  + ", Password=" + Password + '}';
+        //return "Course{" + "courseCode=" + courseCode + ", courseName=" + courseName +  ", session" + sessions + '}';
+    }
     
 }

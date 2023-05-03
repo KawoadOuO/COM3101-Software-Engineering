@@ -20,16 +20,28 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
+import hsuadddrop.Controller;
+import hsuadddrop.model.database.StaffDAO;
 
 /**
  *
  * @author lukaon
  */
 public class MainUI extends javax.swing.JFrame {
-    public MainUI() {
-        initComponents();
-        displayTimeAndStaffID();
+
+    private Controller controller;
+
+    public void setController(Controller c) {
+        this.controller = c;
     }
+
+    public MainUI() {
+
+        setController(new Controller());
+
+        initComponents();
+    }
+
 
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -43,7 +55,7 @@ public class MainUI extends javax.swing.JFrame {
         tf_studentid = new javax.swing.JTextField();
         bt_checkcourse = new javax.swing.JButton();
         label_AHCC = new javax.swing.JLabel();
-        bt_exit = new javax.swing.JButton();
+        bt_logout = new javax.swing.JButton();
         bt_add = new javax.swing.JButton();
         label_time = new javax.swing.JLabel();
         bt_checkstudent = new javax.swing.JButton();
@@ -102,12 +114,12 @@ public class MainUI extends javax.swing.JFrame {
         label_AHCC.setForeground(new java.awt.Color(0, 204, 102));
         label_AHCC.setText("AHCC Student Registration System");
 
-        bt_exit.setFont(new java.awt.Font("Microsoft JhengHei UI", 1, 18)); // NOI18N
-        bt_exit.setForeground(new java.awt.Color(255, 51, 51));
-        bt_exit.setText("EXIT");
-        bt_exit.addActionListener(new java.awt.event.ActionListener() {
+        bt_logout.setFont(new java.awt.Font("Microsoft JhengHei UI", 1, 18)); // NOI18N
+        bt_logout.setForeground(new java.awt.Color(255, 51, 51));
+        bt_logout.setText("Logout");
+        bt_logout.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                bt_exitActionPerformed(evt);
+                bt_logoutActionPerformed(evt);
             }
         });
 
@@ -138,7 +150,7 @@ public class MainUI extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(label_AHCC, javax.swing.GroupLayout.PREFERRED_SIZE, 309, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(bt_exit))
+                        .addComponent(bt_logout))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(11, 11, 11)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -174,7 +186,7 @@ public class MainUI extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(bt_exit)
+                        .addComponent(bt_logout)
                         .addGap(18, 18, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -205,76 +217,76 @@ public class MainUI extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void dt_adddropActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dt_adddropActionPerformed
-    if(checkStudent() == true){
-        JFrame frame = null;
-        clickAddDrop(frame);}
+        if (checkStudent() == true) {
+            JFrame frame = null;
+            clickAddDrop(frame);
+        }
     }//GEN-LAST:event_dt_adddropActionPerformed
 
     private void bt_checkcourseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_checkcourseActionPerformed
- 
+
     }//GEN-LAST:event_bt_checkcourseActionPerformed
 
-    private void bt_exitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_exitActionPerformed
-        System.exit(0);
-    }//GEN-LAST:event_bt_exitActionPerformed
+    private void bt_logoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_logoutActionPerformed
+        controller.login();
+    }//GEN-LAST:event_bt_logoutActionPerformed
 
     private void bt_addActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_addActionPerformed
-        if(checkStudent() == true){
-        JFrame frame = null;
-        clickAdd(frame);}
+        if (checkStudent() == true) {
+            controller.AddCourse();
+        }
     }//GEN-LAST:event_bt_addActionPerformed
 
     private void bt_checkstudentActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_checkstudentActionPerformed
-       
-        
-        
+
+
     }//GEN-LAST:event_bt_checkstudentActionPerformed
 
     private void bt_dropActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_dropActionPerformed
-        if(checkStudent() == true){
-        JFrame frame = null;
-        clickDrop(frame);}
+        if (checkStudent() == true) {
+            controller.DropCourse();
+        }
     }//GEN-LAST:event_bt_dropActionPerformed
 
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(MainUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(MainUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(MainUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(MainUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new MainUI().setVisible(true);
-            }
-        });
-    }
+//    public static void main(String args[]) {
+//        /* Set the Nimbus look and feel */
+//        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+//        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+//         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+//         */
+//        try {
+//            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+//                if ("Nimbus".equals(info.getName())) {
+//                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+//                    break;
+//                }
+//            }
+//        } catch (ClassNotFoundException ex) {
+//            java.util.logging.Logger.getLogger(MainUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        } catch (InstantiationException ex) {
+//            java.util.logging.Logger.getLogger(MainUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        } catch (IllegalAccessException ex) {
+//            java.util.logging.Logger.getLogger(MainUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+//            java.util.logging.Logger.getLogger(MainUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        }
+//        //</editor-fold>
+//        //</editor-fold>
+//
+//        /* Create and display the form */
+//        java.awt.EventQueue.invokeLater(new Runnable() {
+//            public void run() {
+//                new MainUI().setVisible(true);
+//            }
+//        });
+//    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton bt_add;
     private javax.swing.JButton bt_checkcourse;
     private javax.swing.JButton bt_checkstudent;
     private javax.swing.JButton bt_drop;
-    private javax.swing.JButton bt_exit;
+    private javax.swing.JButton bt_logout;
     private javax.swing.JButton dt_adddrop;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel label_AHCC;
@@ -284,209 +296,85 @@ public class MainUI extends javax.swing.JFrame {
     private javax.swing.JTable table;
     private javax.swing.JTextField tf_studentid;
     // End of variables declaration//GEN-END:variables
-    
-    public Hashtable<String, String> login(JFrame frame){
-            boolean loginPageDisplayed = false;
-            Hashtable<String, String> logininformation = new Hashtable<String, String>();
-                if (loginPageDisplayed) {
-                        // Return the login information without displaying the login page again
-                        return logininformation;    
-                    }
-            while(true){
-            JPanel panel = new JPanel(new BorderLayout(5, 5));
-            JPanel label = new JPanel(new GridLayout(0, 1, 2, 2));
-            label.add(new JLabel("Staff ID", SwingConstants.RIGHT));
-            label.add(new JLabel("Password", SwingConstants.RIGHT));
-            panel.add(label, BorderLayout.WEST);
 
-            JPanel controls = new JPanel(new GridLayout(0, 1, 2, 2));
-            JTextField staffid = new JTextField();
-            controls.add(staffid);
-            JTextField password = new JTextField();
-            controls.add(password);
-            panel.add(controls, BorderLayout.CENTER);
-
-            int result = JOptionPane.showConfirmDialog(frame, panel, "Login", JOptionPane.OK_CANCEL_OPTION);
-
-            if(result == JOptionPane.CLOSED_OPTION){
-                displayErrorMessage("Login Cancelled");
-                System.exit(0);
-                }
-
-            if(result == JOptionPane.CANCEL_OPTION){
-                displayErrorMessage("Login Cancelled");
-                System.exit(0);
-                }
-            if(result == JOptionPane.OK_OPTION){
-                String id=staffid.getText();
-                String pw=password.getText();
-                if (id.isEmpty() || pw.isEmpty()){
-                    displayErrorMessage("Can't be empty");
-                    continue;
-                    }   
-                else {
-                   logininformation.put("staffid", id);
-                   logininformation.put("password", pw);
-                   loginPageDisplayed = true; 
-                   break;
-                    }
-            }
-                else { break; }     
-            }
-            return logininformation;
-    }
-
-    public void displayTimeAndStaffID() {                                              
-        int day, month, year;
-        int second, minute, hour;
-        
-        GregorianCalendar gc = new GregorianCalendar();
-        day = gc.get(Calendar.DAY_OF_MONTH);
-        month = gc.get(Calendar.MONTH) + 1;
-        year = gc.get(Calendar.YEAR);
-        second = gc.get(Calendar.SECOND);
-        minute = gc.get(Calendar.MINUTE);
-        hour = gc.get(Calendar.HOUR_OF_DAY);
-        
-        String time = "Time:" + year + "/" + month + "/"  + day + "   " + hour + ":"+minute+":"+second;
-        label_time.setText(time);
-        JFrame frame = null;
-        
-        Hashtable<String, String> loginInfo = login(frame);
-        String staffid = loginInfo.get("staffid");
-        String welcome = "StaffID: "+staffid;
-        label_welcome.setText(welcome);
-        
-    }
-    
-    public boolean checkStudent(){
+    public boolean checkStudent() {
         boolean student_not_empty = false;
         String student_id = tf_studentid.getText();
-        if (student_id.isEmpty()){
+        if (student_id.isEmpty()) {
             displayErrorMessage("Please input Student ID!");
-            return false;}
-        else{return true;}
+            return false;
+        } else {
+            return true;
+        }
     }
-    
+
+    public void setWelcomeText(String s) {
+        label_welcome.setText(s);
+    }
+
     public void displayErrorMessage(String message) {
-        JOptionPane.showMessageDialog(rootPane, message);  }
+        JOptionPane.showMessageDialog(rootPane, message);
+    }
 
     public void displaySuccessMessage(String message) {
-        JOptionPane.showMessageDialog(rootPane, message);  }
+        JOptionPane.showMessageDialog(rootPane, message);
+    }
 
-    public Hashtable<String, String> clickAdd(JFrame frame) {
+    /*
+    public void clickAdd(JFrame frame) {
         boolean addModuleDisplayed = false;
-        Hashtable<String, String> addModuleData = new Hashtable<String, String>();
         if (addModuleDisplayed) {
-                    // Return the login information without displaying the login page again
-                    return addModuleData;    
-                }
-        while(true){
+        }
+        while (true) {
             JPanel panel = new JPanel(new BorderLayout(5, 5));
             JPanel label = new JPanel(new GridLayout(0, 1, 2, 2));
-            label.add(new JLabel("Course Code", SwingConstants.RIGHT));
-            label.add(new JLabel("Session", SwingConstants.RIGHT));
+            label.add(new JLabel("Course Code - Session", SwingConstants.RIGHT));
+            label.add(new JLabel("eg. COM1000-L01", SwingConstants.RIGHT));
             panel.add(label, BorderLayout.WEST);
 
             JPanel controls = new JPanel(new GridLayout(0, 1, 2, 2));
-            JTextField tf_module_code = new JTextField();
-            controls.add(tf_module_code);
-            JTextField tf_session = new JTextField();
-            controls.add(tf_session);
+            JTextField tf_input = new JTextField();
+            tf_input.setColumns(20);
+            controls.add(tf_input);
             panel.add(controls, BorderLayout.CENTER);
 
             int result = JOptionPane.showConfirmDialog(frame, panel, "Add Module", JOptionPane.OK_CANCEL_OPTION);
-        
-        
-                if(result == JOptionPane.CLOSED_OPTION){
-                    displayErrorMessage("Add Module Cancelled");
-                    break;
-                    }
 
-                if(result == JOptionPane.CANCEL_OPTION){
-                    displayErrorMessage("Add Module Cancelled");
+            if (result == JOptionPane.CLOSED_OPTION) {
+                displayErrorMessage("Add Module Cancelled");
+                break;
+            }
+
+            if (result == JOptionPane.CANCEL_OPTION) {
+                displayErrorMessage("Add Module Cancelled");
+                break;
+            }
+            if (result == JOptionPane.OK_OPTION) {
+                String input = tf_input.getText();
+                String[] details = input.split("-");
+                String courseCode = details[0];
+                String session = details[1];
+                if (input.isEmpty() || session.isEmpty()||courseCode.isEmpty()) {
+                    displayErrorMessage("Can't be empty");
+                    continue;
+                } else {
+
+                    addModuleDisplayed = true;
+                    displaySuccessMessage("Add Module Successfully for " + getStudentID() + "\nModule Code: " + courseCode + "\nSession: " + session);
                     break;
-                    }
-                if(result == JOptionPane.OK_OPTION){
-                    String module_code=tf_module_code.getText();
-                    String session=tf_session.getText();
-                    if (module_code.isEmpty() || session.isEmpty()){
-                        displayErrorMessage("Can't be empty");
-                        continue;
-                        }   
-                    else {
-                       addModuleData.put("Module_Code", module_code);
-                       addModuleData.put("Session", session);
-                       addModuleDisplayed = true; 
-                       displaySuccessMessage("Add Module Successfully for "+ getStudentID() + "\nModule Code: "+module_code+"\nSession: "+session);
-                       break;
-                        }
-        }
-    }
-         return addModuleData; 
-    }
-    
-    public Hashtable<String, String> clickDrop(JFrame frame) {
-        boolean dropModuleDisplayed = false;
-        Hashtable<String, String> dropModuleData = new Hashtable<String, String>();
-        if (dropModuleDisplayed) {
-                    // Return the login information without displaying the login page again
-                    return dropModuleData;    
                 }
-        while(true){
-            JPanel panel = new JPanel(new BorderLayout(5, 5));
-            JPanel label = new JPanel(new GridLayout(0, 1, 2, 2));
-            label.add(new JLabel("Course Code", SwingConstants.RIGHT));
-            label.add(new JLabel("Session", SwingConstants.RIGHT));
-            panel.add(label, BorderLayout.WEST);
-
-            JPanel controls = new JPanel(new GridLayout(0, 1, 2, 2));
-            JTextField tf_module_code = new JTextField();
-            controls.add(tf_module_code);
-            JTextField tf_session = new JTextField();
-            controls.add(tf_session);
-            panel.add(controls, BorderLayout.CENTER);
-
-            int result = JOptionPane.showConfirmDialog(frame, panel, "Drop Module", JOptionPane.OK_CANCEL_OPTION);
-        
-        
-                if(result == JOptionPane.CLOSED_OPTION){
-                    displayErrorMessage("Drop Module Cancelled");
-                    break;
-                    }
-
-                if(result == JOptionPane.CANCEL_OPTION){
-                    displayErrorMessage("Drop Module Cancelled");
-                    break;
-                    }
-                if(result == JOptionPane.OK_OPTION){
-                    String module_code=tf_module_code.getText();
-                    String session=tf_session.getText();
-                    if (module_code.isEmpty() || session.isEmpty()){
-                        displayErrorMessage("Can't be empty");
-                        continue;
-                        }
-                    
-                    else {
-                       dropModuleData.put("Module_Code", module_code);
-                       dropModuleData.put("Session", session);
-                       dropModuleDisplayed = true; 
-                       displaySuccessMessage("Drop Module Successfully for "+ getStudentID() + "\nModule Code: "+module_code+"\nSession: "+session);
-                       break;
-                        }
+            }
         }
     }
-         return dropModuleData; 
-    }
-    
+     */
     public Hashtable<String, String> clickAddDrop(JFrame frame) {
         boolean addDropModuleDisplayed = false;
         Hashtable<String, String> addDropModuleData = new Hashtable<String, String>();
         if (addDropModuleDisplayed) {
-                    // Return the login information without displaying the login page again
-                    return addDropModuleData;    
-                }
-        while(true){
+            // Return the login information without displaying the login page again
+            return addDropModuleData;
+        }
+        while (true) {
             JPanel panel = new JPanel(new BorderLayout(5, 5));
             JPanel label = new JPanel(new GridLayout(0, 1, 2, 2));
             label.add(new JLabel("Add Module Code", SwingConstants.RIGHT));
@@ -507,56 +395,41 @@ public class MainUI extends javax.swing.JFrame {
             panel.add(controls, BorderLayout.CENTER);
 
             int result = JOptionPane.showConfirmDialog(frame, panel, "Add Module", JOptionPane.OK_CANCEL_OPTION);
-        
-        
-                if(result == JOptionPane.CLOSED_OPTION){
-                    displayErrorMessage("Add Module Cancelled");
-                    break;
-                    }
 
-                if(result == JOptionPane.CANCEL_OPTION){
-                    displayErrorMessage("Add Module Cancelled");
-                    break;
-                    }
-                if(result == JOptionPane.OK_OPTION){
-                    String module_code=tf_add_module_code.getText();
-                    String session=tf_add_session.getText();
-                    if (module_code.isEmpty()){
-                        displayErrorMessage("Module Code can't be empty");
-                        continue;
-                        }
-                    if (session.isEmpty()){
-                        displayErrorMessage("Session can't be empty");
-                        continue;
-                        }
-                    
-                       addDropModuleData.put("Module_Code", module_code);
-                       addDropModuleData.put("Session", session);
-                       addDropModuleDisplayed = true; 
-                       displaySuccessMessage("Add Module Successfully for "+ getStudentID() + "\nModule Code: "+module_code+"\nSession: "+session);
-                       break;
-                        }
-        
+            if (result == JOptionPane.CLOSED_OPTION) {
+                displayErrorMessage("Add Module Cancelled");
+                break;
+            }
+
+            if (result == JOptionPane.CANCEL_OPTION) {
+                displayErrorMessage("Add Module Cancelled");
+                break;
+            }
+            if (result == JOptionPane.OK_OPTION) {
+                String module_code = tf_add_module_code.getText();
+                String session = tf_add_session.getText();
+                if (module_code.isEmpty()) {
+                    displayErrorMessage("Module Code can't be empty");
+                    continue;
+                }
+                if (session.isEmpty()) {
+                    displayErrorMessage("Session can't be empty");
+                    continue;
+                }
+
+                addDropModuleData.put("Module_Code", module_code);
+                addDropModuleData.put("Session", session);
+                addDropModuleDisplayed = true;
+                displaySuccessMessage("Add Module Successfully for " + getStudentID() + "\nModule Code: " + module_code + "\nSession: " + session);
+                break;
+            }
+
+        }
+        return addDropModuleData;
     }
-         return addDropModuleData; 
-    }
-    
-    
-    public String getStudentID(){
+
+    public String getStudentID() {
         String studentid = tf_studentid.getText();
         return studentid;
     }
-    
-    
-    
-    public void startUp(){
-        Session session = new Session("COM1000", "L01", "ABC", 10, MONDAY, MORNING);
-        
-    
-    }
-    
-    
-    
-    
 }
-

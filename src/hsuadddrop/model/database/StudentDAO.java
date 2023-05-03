@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class StudentDAO {
+
     private Connection conn;
 
     public StudentDAO(Connection conn) {
@@ -63,7 +64,7 @@ public class StudentDAO {
     }
 
     public List<Session> getRegisteredSessions(Student student) {
-        return new CourseDAO(conn).getRegisteredSessions(student);
+        return new SessionDAO(conn).getRegisteredSessions(student);
     }
 
     public void addSession(Student student, Session sessionToAdd) throws SQLException {

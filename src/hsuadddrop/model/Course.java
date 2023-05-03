@@ -2,13 +2,14 @@ package hsuadddrop.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import hsuadddrop.model.database.*;
 
 public class Course {
     private String courseName;
     private String courseCode;
     private List<Session> sessions;
 
-    public Course(String courseName, String courseCode) {
+    public Course(String courseCode, String courseName) {
         this.courseName = courseName;
         this.courseCode = courseCode;
         this.sessions = new ArrayList<>();
@@ -48,7 +49,11 @@ public class Course {
         this.sessions = sessions;
     }
 
-
+@Override
+    public String toString() {
+        return "Course {" + "courseCode = " + courseCode + ", courseName = " + courseName  + ", session=" + sessions + '}';
+        //return "Course{" + "courseCode=" + courseCode + ", courseName=" + courseName +  ", session" + sessions + '}';
+    }
 
 
 

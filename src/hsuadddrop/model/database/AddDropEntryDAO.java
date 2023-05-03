@@ -32,14 +32,14 @@ public class AddDropEntryDAO {
             String status = rs.getString("status");
             String reason = rs.getString("reason");
 
-            Session sessionToAdd = new CourseDAO(conn).getSessionByID(courseCodeToAdd, sessionIDToAdd);
-            Session sessionToDrop = new CourseDAO(conn).getSessionByID(courseCodeToDrop, sessionIDToDrop);
+            Session sessionToAdd = new SessionDAO(conn).getSessionByID(courseCodeToAdd, sessionIDToAdd);
+            Session sessionToDrop = new SessionDAO(conn).getSessionByID(courseCodeToDrop, sessionIDToDrop);
 
             AddDropEntry entry = new AddDropEntry(
                     new StudentDAO(conn).getStudentByID(studentId),
                     sessionToAdd,
                     sessionToDrop,
-                    Status.valueOf(status),
+                    Status.fromDisplayName(status),
                     reason
             );
             entries.add(entry);
