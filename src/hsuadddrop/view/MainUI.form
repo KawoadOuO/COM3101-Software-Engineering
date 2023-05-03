@@ -98,12 +98,12 @@
                           </Group>
                           <Group type="102" alignment="0" attributes="0">
                               <EmptySpace max="-2" attributes="0"/>
-                              <Group type="103" groupAlignment="3" attributes="0">
-                                  <Component id="label_AHCC" alignment="3" min="-2" pref="45" max="-2" attributes="0"/>
-                                  <Group type="103" alignment="3" groupAlignment="3" attributes="0">
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Group type="103" alignment="0" groupAlignment="3" attributes="0">
                                       <Component id="tf_studentid" alignment="3" min="-2" max="-2" attributes="0"/>
                                       <Component id="label_sid" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
                                   </Group>
+                                  <Component id="label_AHCC" min="-2" pref="45" max="-2" attributes="0"/>
                               </Group>
                           </Group>
                       </Group>

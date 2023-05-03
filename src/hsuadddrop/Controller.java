@@ -4,8 +4,11 @@ import hsuadddrop.model.*;
 import hsuadddrop.model.database.AddDropEntryDAO;
 import hsuadddrop.model.database.CourseDAO;
 import hsuadddrop.model.database.DatabaseConnection;
+import hsuadddrop.model.database.EnrollmentDAO;
 import hsuadddrop.model.database.SessionDAO;
 import hsuadddrop.model.database.StaffDAO;
+import hsuadddrop.model.database.StudentDAO;
+import hsuadddrop.model.database.data.DataImport;
 import hsuadddrop.view.MainUI;
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -21,6 +24,8 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableModel;
@@ -158,6 +163,10 @@ public class Controller {
         JOptionPane.showMessageDialog(rootPane, message);
     }
 
+    public void displayStudentInfo(String message, JScrollPane scrollPane) {
+    JOptionPane.showMessageDialog(view, scrollPane, message, JOptionPane.INFORMATION_MESSAGE);
+}
+    
     public void login() {
         boolean loginPageDisplayed = false;
         if (loginPageDisplayed) {
@@ -208,10 +217,10 @@ public class Controller {
         }
     }
 
-
     public void updateCourse() throws SQLException {
-        Connection conn = DatabaseConnection.getInstance().getConnection();
-        DefaultTableModel model = (DefaultTableModel) new DefaultTableModel();
+        try {
+            Connection conn = DatabaseConnection.getInstance().getConnection();
+            DefaultTableModel model = (DefaultTableModel) new DefaultTableModel();
             model.addColumn("Course Code");
             model.addColumn("Session ID");
             model.addColumn("Course Name");
@@ -219,21 +228,24 @@ public class Controller {
             model.addColumn("Weekday");
             model.addColumn("Teacher");
             model.addColumn("Capacity");
-            
-        List<Session> allsession = new SessionDAO(conn).getAllSession();
-        System.out.println(allsession.size());
-        for (Session session : allsession) {
-            String courseCode = session.getCourseCode();
-            String sessionID = session.getSessionID();
-            String courseName = new CourseDAO(conn).getCourseByCourseCode(courseCode).getCourseName();
-            String time = session.getTime().toString();
-            String weekday = session.getWeekday().toString();
-            String teacher = session.getTeacher();
-            int capacity = session.getCapacity();
-            String[] row = {courseCode, sessionID, courseName,time, weekday, teacher,Integer.toString(capacity)};
-            model.addRow(row);
+
+            List<Session> allsession = new SessionDAO(conn).getAllSession();
+            for (Session session : allsession) {
+                String courseCode = session.getCourseCode();
+                String sessionID = session.getSessionID();
+                String courseName = new CourseDAO(conn).getCourseByCourseCode(courseCode).getCourseName();
+                String time = session.getTime().toString();
+                String weekday = session.getWeekday().toString();
+                String teacher = session.getTeacher();
+                int capacity = session.getCapacity();
+                String[] row = {courseCode, sessionID, courseName, time, weekday, teacher, Integer.toString(capacity)};
+                model.addRow(row);
+            }
+            view.setTableModel(model);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
-        view.setTableModel(model);
+
     }
 
     public void addCourse() throws SQLException {
@@ -265,45 +277,50 @@ public class Controller {
                 displayErrorMessage("Add Module Cancelled");
                 break;
             }
-            Connection connection = DatabaseConnection.getInstance().getConnection();
+            try {
+                Connection conn = DatabaseConnection.getInstance().getConnection();
 
-            if (result == JOptionPane.OK_OPTION) {
-                String input = tf_input.getText();
-                if (input.isEmpty()) {
-                    displayErrorMessage("Input can't be empty");
-                    continue;
+                if (result == JOptionPane.OK_OPTION) {
+                    String input = tf_input.getText().toUpperCase();
+                    if (input.isEmpty()) {
+                        displayErrorMessage("Input can't be empty");
+                        continue;
+                    }
+
+                    String[] details = input.split("-");
+                    if (details.length < 2) {
+                        displayErrorMessage("Wrong input format, example : COM1000-L01");
+                        continue;
+                    }
+                    if (details[0].isEmpty()) {
+                        displayErrorMessage("Course Code can't be empty");
+                        continue;
+                    }
+                    String courseCode = details[0];
+
+                    if (new CourseDAO(conn).getCourseByCourseCode(courseCode) == null) {
+                        displayErrorMessage("There is no this course with course Code : " + courseCode);
+                        continue;
+                    }
+                    if (details[1].isEmpty()) {
+                        displayErrorMessage("Session can't be empty");
+                        continue;
+                    }
+                    String session = details[1];
+
+                    addModuleDisplayed = true;
+
+                    displaySuccessMessage("Add Module Successfully for " + view.getStudentID()
+                            + "\nModule Code: " + courseCode
+                            + "\nModule Name: " + new CourseDAO(conn).getCourseByCourseCode(courseCode).getCourseName()
+                            + "\nSession: " + session);
+                    break;
+
                 }
-
-                String[] details = input.split("-");
-                if (details.length < 2) {
-                    displayErrorMessage("Wrong input format, example : COM1000-L01");
-                    continue;
-                }
-                if (details[0].isEmpty()) {
-                    displayErrorMessage("Course Code can't be empty");
-                    continue;
-                }
-                String courseCode = details[0];
-
-                if (new CourseDAO(connection).getCourseByCourseCode(courseCode) == null) {
-                    displayErrorMessage("There is no this course with course Code : " + courseCode);
-                    continue;
-                }
-                if (details[1].isEmpty()) {
-                    displayErrorMessage("Session can't be empty");
-                    continue;
-                }
-                String session = details[1];
-
-                addModuleDisplayed = true;
-
-                displaySuccessMessage("Add Module Successfully for " + view.getStudentID()
-                        + "\nModule Code: " + courseCode
-                        + "\nModule Name: " + new CourseDAO(connection).getCourseByCourseCode(courseCode).getCourseName()
-                        + "\nSession: " + session);
-                break;
-
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
             }
+
         }
 
     }
@@ -337,45 +354,193 @@ public class Controller {
                 displayErrorMessage("Drop Module Cancelled");
                 break;
             }
-            Connection connection = DatabaseConnection.getInstance().getConnection();
-            if (result == JOptionPane.OK_OPTION) {
-                String input = tf_input.getText();
-                String[] details = input.split("-");
-                if (details.length < 2) {
-                    displayErrorMessage("Wrong input format, example : COM1000-L01");
-                    continue;
-                }
+            try {
+                Connection conn = DatabaseConnection.getInstance().getConnection();
+                if (result == JOptionPane.OK_OPTION) {
+                    String input = tf_input.getText().toUpperCase();
+                    String[] details = input.split("-");
+                    if (details.length < 2) {
+                        displayErrorMessage("Wrong input format, example : COM1000-L01");
+                        continue;
+                    }
 
-                if (details[0].isEmpty()) {
-                    displayErrorMessage("Course Code can't be empty");
-                    continue;
-                }
-                String courseCode = details[0];
-                if (new CourseDAO(connection).getCourseByCourseCode(courseCode) == null) {
-                    displayErrorMessage("There is no this course with course Code : " + courseCode);
-                    continue;
-                }
-                if (details[1].isEmpty()) {
-                    displayErrorMessage("Session can't be empty");
-                    continue;
-                }
-                String session = details[1];
+                    if (details[0].isEmpty()) {
+                        displayErrorMessage("Course Code can't be empty");
+                        continue;
+                    }
+                    String courseCode = details[0];
 
-                //controller.processAddDropEntries();
-                dropModuleDisplayed = true;
+                    if (new CourseDAO(conn).getCourseByCourseCode(courseCode) == null) {
+                        displayErrorMessage("There is no this course with course Code : " + courseCode);
+                        continue;
+                    }
+                    if (details[1].isEmpty()) {
+                        displayErrorMessage("Session can't be empty");
+                        continue;
+                    }
+                    String session = details[1];
 
-                displaySuccessMessage("Drop Module Successfully for " + view.getStudentID()
-                        + "\nModule Code: " + courseCode
-                        + "\nModule Name: " + new CourseDAO(connection).getCourseByCourseCode(courseCode).getCourseName()
-                        + "\nSession: " + session);
+                    //controller.processAddDropEntries();
+                    dropModuleDisplayed = true;
+
+                    displaySuccessMessage("Drop Module Successfully for " + view.getStudentID()
+                            + "\nModule Code: " + courseCode
+                            + "\nModule Name: " + new CourseDAO(conn).getCourseByCourseCode(courseCode).getCourseName()
+                            + "\nSession: " + session);
+                    break;
+
+                }
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+
+        }
+    }
+
+    public void addDropCourse() throws SQLException {
+
+        boolean addDropModuleDisplayed = false;
+        if (addDropModuleDisplayed) {
+        }
+
+        while (true) {
+            JPanel panel = new JPanel(new BorderLayout(5, 5));
+            JPanel label = new JPanel(new GridLayout(0, 1, 2, 2));
+            label.add(new JLabel("Add Course Code - Session", SwingConstants.RIGHT));
+            label.add(new JLabel("eg.COM1000-L01", SwingConstants.RIGHT));
+            label.add(new JLabel("------------------", SwingConstants.RIGHT));
+            label.add(new JLabel("Drop Course Code - Session", SwingConstants.RIGHT));
+            label.add(new JLabel("eg.COM1000-L01", SwingConstants.RIGHT));
+            panel.add(label, BorderLayout.WEST);
+
+            JPanel controls = new JPanel(new GridLayout(0, 1, 2, 2));
+            JTextField tf_add_input = new JTextField();
+            JTextField tf_drop_input = new JTextField();
+            tf_add_input.setColumns(20);
+            tf_drop_input.setColumns(20);
+            controls.add(tf_add_input);
+            controls.add(tf_drop_input);
+            panel.add(controls, BorderLayout.CENTER);
+
+            JFrame frame = null;
+            int result = JOptionPane.showConfirmDialog(frame, panel, "Add/Drop Module", JOptionPane.OK_CANCEL_OPTION);
+
+            if (result == JOptionPane.CLOSED_OPTION) {
+                displayErrorMessage("Add/Drop Module Cancelled");
                 break;
+            }
 
+            if (result == JOptionPane.CANCEL_OPTION) {
+                displayErrorMessage("Add/Drop Module Cancelled");
+                break;
+            }
+            try {
+                Connection conn = DatabaseConnection.getInstance().getConnection();
+                if (result == JOptionPane.OK_OPTION) {
+                    
+                    String add_input = tf_add_input.getText().toUpperCase();
+                    String[] add_details = add_input.split("-");
+
+                    if (add_details.length < 2) {
+                        displayErrorMessage("Add Wrong input format, example : COM1000-L01");
+                        continue;
+                    }
+                    if (add_details[0].isEmpty()) {
+                        displayErrorMessage("Add Course Code can't be empty");
+                        continue;
+                    }
+                    String add_courseCode = add_details[0];
+                    if (new CourseDAO(conn).getCourseByCourseCode(add_courseCode) == null) {
+                        displayErrorMessage("There is no this course with course Code : " + add_courseCode);
+                        continue;
+                    }
+                    if (add_details[1].isEmpty()) {
+                        displayErrorMessage("Add Session can't be empty");
+                        continue;
+                    }
+                    String add_session = add_details[1];
+
+                    String drop_input = tf_drop_input.getText().toUpperCase();
+                    String[] drop_details = drop_input.split("-");
+                    if (drop_details.length < 2) {
+                        displayErrorMessage("Drop wrong input format, example : COM1000-L01");
+                        continue;
+                    }
+                    if (drop_details[0].isEmpty()) {
+                        displayErrorMessage("Drop Course Code can't be empty");
+                        continue;
+                    }
+                    String drop_courseCode = drop_details[0];
+                    if (new CourseDAO(conn).getCourseByCourseCode(drop_courseCode) == null) {
+                        displayErrorMessage("There is no this course with course Code : " + drop_courseCode);
+                        continue;
+                    }
+                    if (drop_details[1].isEmpty()) {
+                        displayErrorMessage("Drop Session can't be empty");
+                        continue;
+                    }
+                        String drop_session = drop_details[1];
+                        
+                        addDropModuleDisplayed = true;
+
+                    displaySuccessMessage("Add Module Successfully for " + view.getStudentID()
+                            + "\nAdd Module Code: " + add_courseCode
+                            + "\nAdd Module Name: " + new CourseDAO(conn).getCourseByCourseCode(add_courseCode).getCourseName()
+                            + "\nAdd Session: " + add_session
+                            + "\n"
+                            + "\nDrop Module Code: " + drop_courseCode
+                            + "\nDrop Module Name: " + new CourseDAO(conn).getCourseByCourseCode(drop_courseCode).getCourseName()
+                            + "\nDrop Session: " + drop_session);
+                    break;
+                }
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
             }
         }
     }
 
-    public void showAllSession() {
+    public void importData() {
+        Connection conn = DatabaseConnection.getInstance().getConnection();
+        DataImport dataimport = new DataImport(conn);
+        dataimport.importData();
 
+    }
+
+    public void showStudentInfo() throws SQLException {
+        Connection conn = DatabaseConnection.getInstance().getConnection();
+        DefaultTableModel model = (DefaultTableModel) new DefaultTableModel();
+            model.addColumn("Course Code");
+            model.addColumn("Session ID");
+            model.addColumn("Course Name");
+            model.addColumn("Time");
+            model.addColumn("Weekday");
+            model.addColumn("Teacher");
+        
+        String studentID = view.getStudentID();
+        String name = new StudentDAO(conn).getStudentByID(studentID).getStudentName();
+        String gender = new StudentDAO(conn).getStudentByID(studentID).getGender();
+        
+        Student student = new StudentDAO(conn).getStudentByID(studentID);
+        List<Session> allsession = new SessionDAO(conn).getRegisteredSessions(student);
+        for(Session session : allsession){
+            String courseCode = session.getCourseCode();
+            String sessionID = session.getSessionID();
+            String courseName = new CourseDAO(conn).getCourseByCourseCode(courseCode).getCourseName();
+            String time = session.getTime().toString();
+            String weekday = session.getWeekday().toString();
+            String teacher = session.getTeacher(); 
+            String[] row = {courseCode, sessionID, courseName, time, weekday, teacher};
+            model.addRow(row);
+        }
+        JTable table = new JTable(model);
+        JScrollPane scrollPane = new JScrollPane(table);
+         String message = "Student Info:\n" +
+            "Student ID: " + studentID + "\n" +
+            "Student Name: " + name + "\n" +
+            "Gender: " + gender + "\n";
+        
+        displayStudentInfo(message, scrollPane);
+        
     }
 
 }

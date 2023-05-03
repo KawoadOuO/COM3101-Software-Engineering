@@ -67,12 +67,11 @@ public class HSUsystemMain {
                 if (view == null) {
                     System.out.println("viwe is null");
                 }
-                // controller.processAddDropEntries();
-                System.out.println("check");
+                //controller.processAddDropEntries();
 
                 controller.setView(view);
                 view.setVisible(true);
-                controller.login();
+                //controller.login();
                 try {
                     controller.updateCourse() ;
                 } catch (SQLException ex) {

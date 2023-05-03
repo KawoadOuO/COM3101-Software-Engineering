@@ -212,11 +212,11 @@ public class MainUI extends javax.swing.JFrame {
                                 .addComponent(bt_checkstudent, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(layout.createSequentialGroup()
                                 .addContainerGap()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(label_AHCC, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                         .addComponent(tf_studentid, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addComponent(label_sid, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                                        .addComponent(label_sid, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(label_AHCC, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE))))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 28, Short.MAX_VALUE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(label_welcome, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -238,8 +238,11 @@ public class MainUI extends javax.swing.JFrame {
 
     private void dt_adddropActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dt_adddropActionPerformed
         if (checkStudent() == true) {
-            JFrame frame = null;
-            clickAddDrop(frame);
+            try {
+                controller.addDropCourse();
+            } catch (SQLException ex) {
+                Logger.getLogger(MainUI.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }//GEN-LAST:event_dt_adddropActionPerformed
 
@@ -255,15 +258,18 @@ public class MainUI extends javax.swing.JFrame {
         if (checkStudent() == true) {
             try {
                 controller.addCourse();
-            } catch (SQLException ex) {
-                Logger.getLogger(MainUI.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (SQLException e) {
             }
         }
     }//GEN-LAST:event_bt_addActionPerformed
 
     private void bt_checkstudentActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_checkstudentActionPerformed
 
-
+        try {
+            controller.showStudentInfo();
+        } catch (SQLException ex) {
+            Logger.getLogger(MainUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_bt_checkstudentActionPerformed
 
     private void bt_dropActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_dropActionPerformed
@@ -278,6 +284,12 @@ public class MainUI extends javax.swing.JFrame {
 
     private void bt_importActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_importActionPerformed
         // TODO add your handling code here:
+        controller.importData();
+        try {
+            controller.updateCourse();
+        } catch (SQLException ex) {
+            Logger.getLogger(MainUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_bt_importActionPerformed
 
 //    public static void main(String args[]) {
@@ -332,7 +344,6 @@ public class MainUI extends javax.swing.JFrame {
     // End of variables declaration//GEN-END:variables
 
     public boolean checkStudent() {
-        boolean student_not_empty = false;
         String student_id = tf_studentid.getText();
         if (student_id.isEmpty()) {
             displayErrorMessage("Please input Student ID!");
@@ -420,66 +431,7 @@ public class MainUI extends javax.swing.JFrame {
         }
     }
      */
-    public Hashtable<String, String> clickAddDrop(JFrame frame) {
-        boolean addDropModuleDisplayed = false;
-        Hashtable<String, String> addDropModuleData = new Hashtable<String, String>();
-        if (addDropModuleDisplayed) {
-            // Return the login information without displaying the login page again
-            return addDropModuleData;
-        }
-        while (true) {
-            JPanel panel = new JPanel(new BorderLayout(5, 5));
-            JPanel label = new JPanel(new GridLayout(0, 1, 2, 2));
-            label.add(new JLabel("Add Module Code", SwingConstants.RIGHT));
-            label.add(new JLabel("Session", SwingConstants.RIGHT));
-            label.add(new JLabel("Drop Module Code", SwingConstants.RIGHT));
-            label.add(new JLabel("Session", SwingConstants.RIGHT));
-            panel.add(label, BorderLayout.WEST);
-
-            JPanel controls = new JPanel(new GridLayout(0, 1, 2, 2));
-            JTextField tf_add_module_code = new JTextField();
-            controls.add(tf_add_module_code);
-            JTextField tf_add_session = new JTextField();
-            controls.add(tf_add_session);
-            JTextField tf_drop_module_code = new JTextField();
-            controls.add(tf_drop_module_code);
-            JTextField tf_drop_session = new JTextField();
-            controls.add(tf_drop_session);
-            panel.add(controls, BorderLayout.CENTER);
-
-            int result = JOptionPane.showConfirmDialog(frame, panel, "Add Module", JOptionPane.OK_CANCEL_OPTION);
-
-            if (result == JOptionPane.CLOSED_OPTION) {
-                displayErrorMessage("Add Module Cancelled");
-                break;
-            }
-
-            if (result == JOptionPane.CANCEL_OPTION) {
-                displayErrorMessage("Add Module Cancelled");
-                break;
-            }
-            if (result == JOptionPane.OK_OPTION) {
-                String module_code = tf_add_module_code.getText();
-                String session = tf_add_session.getText();
-                if (module_code.isEmpty()) {
-                    displayErrorMessage("Module Code can't be empty");
-                    continue;
-                }
-                if (session.isEmpty()) {
-                    displayErrorMessage("Session can't be empty");
-                    continue;
-                }
-
-                addDropModuleData.put("Module_Code", module_code);
-                addDropModuleData.put("Session", session);
-                addDropModuleDisplayed = true;
-                displaySuccessMessage("Add Module Successfully for " + getStudentID() + "\nModule Code: " + module_code + "\nSession: " + session);
-                break;
-            }
-
-        }
-        return addDropModuleData;
-    }
+    
 
     public String getStudentID() {
         String studentid = tf_studentid.getText();
