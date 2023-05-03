@@ -1,7 +1,6 @@
 package hsuadddrop.model.database;
 
 import hsuadddrop.model.AddDropEntry;
-import hsuadddrop.model.Course;
 import hsuadddrop.model.Session;
 import hsuadddrop.model.Status;
 
@@ -13,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AddDropEntryDAO {
-    private Connection conn;
+    private final Connection conn;
 
     public AddDropEntryDAO(Connection conn) {
         this.conn = conn;
