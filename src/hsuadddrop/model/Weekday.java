@@ -5,7 +5,6 @@
 package hsuadddrop.model;
 
 /**
- *
  * @author lukaon
  */
 public enum Weekday {
@@ -15,9 +14,9 @@ public enum Weekday {
     THURSDAY("Thu"),
     FRIDAY("Fri"),
     SATURDAY("Sat");
-    
+
     private final String displayName;
-    
+
     Weekday(String displayName) {
         this.displayName = displayName;
     }
@@ -30,10 +29,10 @@ public enum Weekday {
         }
         throw new IllegalArgumentException("No enum constant with display name: " + displayName);
     }
-    
+
     @Override
     public String toString() {
         return displayName;
     }
-    
+
 }

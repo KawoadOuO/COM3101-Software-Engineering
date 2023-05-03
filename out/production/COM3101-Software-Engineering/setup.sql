@@ -1,15 +1,15 @@
-CREATE TABLE staff
+CREATE TABLE IF NOT EXISTS staff
 (
     staff_id VARCHAR(10) PRIMARY KEY,
     name     VARCHAR(50)  NOT NULL,
     password VARCHAR(255) NOT NULL
 );
-CREATE TABLE course
+CREATE TABLE IF NOT EXISTS course
 (
     course_code VARCHAR(10) PRIMARY KEY,
     course_name VARCHAR(50) NOT NULL
 );
-CREATE TABLE session
+CREATE TABLE IF NOT EXISTS session
 (
     session_id  VARCHAR(10) NOT NULL,
     weekday     TEXT        NOT NULL,
@@ -20,13 +20,13 @@ CREATE TABLE session
     PRIMARY KEY (session_id, course_code),
     FOREIGN KEY (course_code) REFERENCES course (course_code) ON DELETE CASCADE
 );
-CREATE TABLE student
+CREATE TABLE IF NOT EXISTS student
 (
     student_id VARCHAR(10) PRIMARY KEY,
     gender     VARCHAR(10) NOT NULL,
     name       VARCHAR(50) NOT NULL
 );
-CREATE TABLE enrollment
+CREATE TABLE IF NOT EXISTS enrollment
 (
     student_id  VARCHAR(10) NOT NULL,
     course_code VARCHAR(10) NOT NULL,
@@ -35,14 +35,15 @@ CREATE TABLE enrollment
     FOREIGN KEY (student_id) REFERENCES student (student_id) ON DELETE CASCADE,
     FOREIGN KEY (course_code, session_id) REFERENCES session (course_code, session_id) ON DELETE CASCADE
 );
-CREATE TABLE add_drop_entry
+CREATE TABLE IF NOT EXISTS add_drop_entry
 (
     entry_id            INTEGER     NOT NULL PRIMARY KEY AUTOINCREMENT,
     student_id          VARCHAR(10) NOT NULL,
-    course_code_to_add  VARCHAR(10) NOT NULL,
-    session_id_to_add   VARCHAR(10) NOT NULL,
-    course_code_to_drop VARCHAR(10) NOT NULL,
-    session_id_to_drop  VARCHAR(10) NOT NULL,
+    course_code_to_add  VARCHAR(10),
+    session_id_to_add   VARCHAR(10),
+    course_code_to_drop VARCHAR(10),
+    session_id_to_drop  VARCHAR(10),
+    status              VARCHAR(10) NOT NULL DEFAULT 'Pending',
     FOREIGN KEY (student_id) REFERENCES student (student_id) ON DELETE CASCADE,
     FOREIGN KEY (course_code_to_add, session_id_to_add) REFERENCES session (course_code, session_id) ON DELETE CASCADE,
     FOREIGN KEY (course_code_to_drop, session_id_to_drop) REFERENCES session (course_code, session_id) ON DELETE CASCADE
@@ -110,9 +111,9 @@ VALUES ('A001', 'COM1000', 'L01'),
 -- Insert data into the add_drop_entry table
 INSERT INTO add_drop_entry (student_id,
                             course_code_to_add,
-                            session_id_to_add,
+                            session_to_add,
                             course_code_to_drop,
-                            session_id_to_drop)
+                            session_to_drop)
 VALUES ('A001', 'COM1000', 'L02', 'COM1000', 'L01'),
        ('A002', 'COM1000', 'L02', 'COM1000', 'L01'),
        ('A003', 'COM2001', 'L01', 'COM1000', 'L01');

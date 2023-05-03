@@ -1,9 +1,7 @@
 package hsuadddrop.model;
 
-import hsuadddrop.model.database.CourseDAO;
 import hsuadddrop.model.database.DatabaseConnection;
 import hsuadddrop.model.database.StudentDAO;
-
 
 import java.sql.SQLException;
 import java.util.List;

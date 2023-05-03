@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class StaffDAO {
-    private Connection conn;
+    private final Connection conn;
 
     public StaffDAO(Connection conn) {
         this.conn = conn;

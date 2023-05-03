@@ -9,7 +9,7 @@ import java.util.List;
 
 public class StudentDAO {
 
-    private Connection conn;
+    private final Connection conn;
 
     public StudentDAO(Connection conn) {
         this.conn = conn;
