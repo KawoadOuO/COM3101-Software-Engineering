@@ -55,19 +55,16 @@ VALUES ('S001', 'Prof Poon', 'password'),
        ('S003', 'Dr KKC', 'password');
 -- Insert data into the course table
 INSERT INTO course (course_code, course_name)
-VALUES ('COM1000',
-        'Contemporary Information Technologies'),
+VALUES ('COM1000','Contemporary Information Technologies'),
        ('COM1005', 'Excel VBA Programming'),
-       ('COM1006',
-        'Artificial Intelligence and Its Applications'),
+       ('COM1006','Artificial Intelligence and Its Applications'),
        ('COM1101', 'Programming Methodology'),
        ('COM1102', 'Programming and Data Structures'),
        ('COM2001', 'Information Systems in Business'),
        ('COM2003', 'Introduction to Financial Computing'),
        ('COM2103', 'Database Design and Management'),
        ('COM3101', 'Software Engineering'),
-       ('COM3102',
-        'Computing Technologies in Web Applications'),
+       ('COM3102','Computing Technologies in Web Applications'),
        ('COM3103', 'Artificial Intelligence'),
        ('COM3015', 'E-commerce Application Development');
 -- Insert data into the session table
@@ -77,18 +74,8 @@ INSERT INTO session (session_id,
                      course_code,
                      teacher,
                      capacity)
-VALUES ('L01',
-        'Mon',
-        'Evening',
-        'COM1000',
-        'Prof Poon',
-        10),
-       ('L02',
-        'Tue',
-        'Evening',
-        'COM1000',
-        'Dr Kong',
-        15),
+VALUES ('L01','Mon', 'Evening','COM1000', 'Prof Poon',10),
+       ('L02','Tue','Evening','COM1000','Dr Kong',15),
        ('L01', 'Sat', 'Morning', 'COM2001', 'Dr KKC', 10);
 -- Insert data into the student table
 INSERT INTO student (student_id, gender, name)
