@@ -20,6 +20,7 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Hashtable;
 import java.util.List;
+import javax.swing.Box;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -163,8 +164,8 @@ public class Controller {
         JOptionPane.showMessageDialog(rootPane, message);
     }
 
-    public void displayStudentInfo(String message, JScrollPane scrollPane) {
-    JOptionPane.showMessageDialog(view, scrollPane, message, JOptionPane.INFORMATION_MESSAGE);
+    public void displayStudentInfo(String message, JPanel panel) {
+    JOptionPane.showMessageDialog(view, panel, message, JOptionPane.INFORMATION_MESSAGE);
 }
     
     public void login() {
@@ -534,13 +535,18 @@ public class Controller {
         }
         JTable table = new JTable(model);
         JScrollPane scrollPane = new JScrollPane(table);
-         String message = "Student Info:\n" +
-            "Student ID: " + studentID + "\n" +
-            "Student Name: " + name + "\n" +
-            "Gender: " + gender + "\n";
+        String message = "<html>Student Info: <br/>" +
+            "Student ID: " + studentID + "<br/>" +
+            "Student Name: " + name + "<br/>" +
+            "Gender: " + gender + "</html>";
+        JLabel messagelabel = new JLabel(message);
+        JPanel panel = new JPanel();
+        panel.add(messagelabel);
+        panel.add(scrollPane);
+        panel.add(Box.createVerticalStrut(5));
         
-        displayStudentInfo(message, scrollPane);
-        
+         
+        displayStudentInfo("Student Info of "+studentID, panel);
     }
 
 }
