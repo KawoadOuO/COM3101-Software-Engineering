@@ -15,6 +15,8 @@ import hsuadddrop.view.MainUI;
 
 import java.sql.*;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class HSUsystemMain {
 
@@ -54,7 +56,7 @@ public class HSUsystemMain {
 //        //</editor-fold>
 //
         /* Create and display the form */
-
+//
         java.awt.EventQueue.invokeLater(new Runnable() {
 
             public void run() {
@@ -70,60 +72,54 @@ public class HSUsystemMain {
 
                 controller.setView(view);
                 view.setVisible(true);
-                //controller.login();
+                controller.login();
+                try {
+                    controller.updateCourse() ;
+                } catch (SQLException ex) {
+                    Logger.getLogger(HSUsystemMain.class.getName()).log(Level.SEVERE, null, ex);
+                }
 
             }
         });
 
-        /*
-        try {
-            System.out.println("Staff");
-            List<Staff> staffs = new StaffDAO(connection).getAllStaff();
-            for(Staff staff : staffs){
-                System.out.println(staff);}
-            
-            System.out.println("Stduent");
-            List<Student> students = new StudentDAO(connection).getAllStudents();
-            for (Student student : students) {
-                System.out.println(student);
-            }
-            System.out.println("Course");
-            List<Course> courses = new CourseDAO(connection).getCoursesWithSessions();
-            for (Course course : courses) {
-                System.out.println(course);
-            }
-            System.out.println("");
-            System.out.println("Session");
-            List<Session> sessions = new SessionDAO(connection).getAllSession();
-            for (Session session : sessions) {
-                System.out.println(session);
-            }
-            System.out.println("");
-            System.out.println("AddDropEntry");
-            List<AddDropEntry> entries = new AddDropEntryDAO(connection).getAllEntries();
-            for (AddDropEntry entry : entries) {
-                System.out.println(entry);
-            }
-            
-            System.out.println("");
-            System.out.println("AddDropEntry");
-            
-            List<Enrollment> entries = new AddDropEntryDAO(connection).getAllEntries();
-            for (AddDropEntry entry : entries) {
-                System.out.println(entry);
-            }
-            
-            List<Session> sessions = new CourseDAO(connection).getAllSessions();
-            for (Session session : sessions) {
-                System.out.println(session.getCourseCode()+" - "+session.getSessionID());
-            }
-            
-            
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
         
-         */
+//        try {
+//            Connection connection = DatabaseConnection.getInstance().getConnection();
+//            System.out.println("Staff");
+//            List<Staff> staffs = new StaffDAO(connection).getAllStaff();
+//            for(Staff staff : staffs){
+//                System.out.println(staff);}
+//            
+//            System.out.println("Stduent");
+//            List<Student> students = new StudentDAO(connection).getAllStudents();
+//            for (Student student : students) {
+//                System.out.println(student);
+//            }
+//            System.out.println("Course");
+//            List<Course> courses = new CourseDAO(connection).getCoursesWithSessions();
+//            for (Course course : courses) {
+//                System.out.println(course);
+//            }
+//            System.out.println("");
+//            System.out.println("Session");
+//            List<Session> sessions = new SessionDAO(connection).getAllSession();
+//            for (Session session : sessions) {
+//                System.out.println(session);
+//            }
+//            System.out.println("");
+//            System.out.println("AddDropEntry");
+//            List<AddDropEntry> entries = new AddDropEntryDAO(connection).getAllEntries();
+//            for (AddDropEntry entry : entries) {
+//                System.out.println(entry);
+//            }
+//            
+//            
+//            
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
+    
+        
+         
     }
 }

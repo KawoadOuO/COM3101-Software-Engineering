@@ -53,7 +53,7 @@ public class SessionDAO {
         PreparedStatement stmt = conn.prepareStatement("SELECT * FROM session");
         ResultSet rs = stmt.executeQuery();
 
-        if (rs.next()) {
+        while (rs.next()) {
             String course_code = rs.getString("course_code");
             String session_id = rs.getString("session_id");
             String teacher = rs.getString("teacher");

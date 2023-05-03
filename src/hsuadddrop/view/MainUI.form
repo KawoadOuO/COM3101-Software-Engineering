@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
 <Form version="1.5" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JFrameFormInfo">
+  <NonVisualComponents>
+    <Component class="java.awt.List" name="list1">
+    </Component>
+  </NonVisualComponents>
   <Properties>
     <Property name="defaultCloseOperation" type="int" value="3"/>
   </Properties>
@@ -40,17 +44,20 @@
                               <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                           </Group>
                           <Group type="102" attributes="0">
-                              <Component id="label_welcome" pref="356" max="32767" attributes="0"/>
-                              <EmptySpace type="separate" max="-2" attributes="0"/>
+                              <Component id="label_welcome" pref="150" max="32767" attributes="0"/>
                               <Group type="103" groupAlignment="0" attributes="0">
                                   <Group type="102" alignment="0" attributes="0">
+                                      <EmptySpace min="-2" pref="179" max="-2" attributes="0"/>
                                       <Component id="label_sid" min="-2" pref="89" max="-2" attributes="0"/>
                                       <EmptySpace type="separate" max="-2" attributes="0"/>
                                       <Component id="tf_studentid" min="-2" pref="117" max="-2" attributes="0"/>
                                   </Group>
                                   <Group type="102" alignment="0" attributes="0">
-                                      <EmptySpace min="-2" pref="21" max="-2" attributes="0"/>
-                                      <Component id="bt_add" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace min="-2" pref="245" max="-2" attributes="0"/>
+                                      <Group type="103" groupAlignment="1" attributes="0">
+                                          <Component id="bt_import" min="-2" max="-2" attributes="0"/>
+                                          <Component id="bt_add" min="-2" max="-2" attributes="0"/>
+                                      </Group>
                                       <EmptySpace type="separate" max="-2" attributes="0"/>
                                       <Component id="bt_drop" min="-2" max="-2" attributes="0"/>
                                   </Group>
@@ -86,19 +93,21 @@
                   <Group type="102" alignment="0" attributes="0">
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" alignment="0" attributes="0">
-                              <EmptySpace min="-2" pref="16" max="-2" attributes="0"/>
-                              <Group type="103" groupAlignment="3" attributes="0">
-                                  <Component id="tf_studentid" alignment="3" min="-2" max="-2" attributes="0"/>
-                                  <Component id="label_sid" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
-                                  <Component id="bt_checkstudent" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
-                              </Group>
+                              <EmptySpace min="-2" pref="17" max="-2" attributes="0"/>
+                              <Component id="bt_checkstudent" min="-2" pref="30" max="-2" attributes="0"/>
                           </Group>
                           <Group type="102" alignment="0" attributes="0">
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="label_AHCC" min="-2" pref="45" max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="3" attributes="0">
+                                  <Component id="label_AHCC" alignment="3" min="-2" pref="45" max="-2" attributes="0"/>
+                                  <Group type="103" alignment="3" groupAlignment="3" attributes="0">
+                                      <Component id="tf_studentid" alignment="3" min="-2" max="-2" attributes="0"/>
+                                      <Component id="label_sid" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
+                                  </Group>
+                              </Group>
                           </Group>
                       </Group>
-                      <EmptySpace pref="36" max="32767" attributes="0"/>
+                      <EmptySpace pref="28" max="32767" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
                           <Component id="label_welcome" alignment="3" min="-2" pref="25" max="-2" attributes="0"/>
                           <Component id="bt_add" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
@@ -106,13 +115,16 @@
                           <Component id="dt_adddrop" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
                           <Component id="bt_checkcourse" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Component id="label_time" min="-2" pref="17" max="-2" attributes="0"/>
-                      <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
+                      <EmptySpace type="separate" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="label_time" alignment="3" min="-2" pref="17" max="-2" attributes="0"/>
+                          <Component id="bt_import" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace min="-2" pref="12" max="-2" attributes="0"/>
                   </Group>
               </Group>
               <Component id="jScrollPane1" min="-2" pref="302" max="-2" attributes="0"/>
-              <EmptySpace pref="46" max="32767" attributes="0"/>
+              <EmptySpace pref="35" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -145,14 +157,53 @@
           <Properties>
             <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
               <Table columnCount="7" rowCount="4">
-                <Column editable="true" title="Module Code" type="java.lang.String"/>
-                <Column editable="true" title="Name" type="java.lang.String"/>
-                <Column editable="true" title="Session" type="java.lang.String"/>
+                <Column editable="true" title="Course Code" type="java.lang.String"/>
+                <Column editable="true" title="Course Name" type="java.lang.String"/>
+                <Column editable="true" title="Session ID" type="java.lang.String"/>
                 <Column editable="true" title="Teacher" type="java.lang.String"/>
-                <Column editable="true" title="Weekday" type="java.lang.String"/>
-                <Column editable="true" title="Time" type="java.lang.String"/>
+                <Column editable="true" title="Weekday" type="java.lang.Object"/>
+                <Column editable="true" title="Time" type="java.lang.Object"/>
                 <Column editable="true" title="Capacity" type="java.lang.Integer"/>
               </Table>
+            </Property>
+            <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.editors2.TableColumnModelEditor">
+              <TableColumnModel selectionModel="0">
+                <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
+                  <Title/>
+                  <Editor/>
+                  <Renderer/>
+                </Column>
+                <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
+                  <Title/>
+                  <Editor/>
+                  <Renderer/>
+                </Column>
+                <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
+                  <Title/>
+                  <Editor/>
+                  <Renderer/>
+                </Column>
+                <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
+                  <Title/>
+                  <Editor/>
+                  <Renderer/>
+                </Column>
+                <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
+                  <Title/>
+                  <Editor/>
+                  <Renderer/>
+                </Column>
+                <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
+                  <Title/>
+                  <Editor/>
+                  <Renderer/>
+                </Column>
+                <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
+                  <Title/>
+                  <Editor/>
+                  <Renderer/>
+                </Column>
+              </TableColumnModel>
             </Property>
             <Property name="tableHeader" type="javax.swing.table.JTableHeader" editor="org.netbeans.modules.form.editors2.JTableHeaderEditor">
               <TableHeader reorderingAllowed="true" resizingAllowed="true"/>
@@ -166,7 +217,7 @@
         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
           <Font name="Microsoft JhengHei UI" size="14" style="0"/>
         </Property>
-        <Property name="text" type="java.lang.String" value="Welcome, (Staff Name/ID)"/>
+        <Property name="text" type="java.lang.String" value="(Staff Name)"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="label_sid">
@@ -222,7 +273,7 @@
     </Component>
     <Component class="javax.swing.JLabel" name="label_time">
       <Properties>
-        <Property name="text" type="java.lang.String" value="2023/5/2 12:53"/>
+        <Property name="text" type="java.lang.String" value="(Login Time)"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JButton" name="bt_checkstudent">
@@ -231,6 +282,14 @@
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="bt_checkstudentActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="bt_import">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Import Data"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="bt_importActionPerformed"/>
       </Events>
     </Component>
   </SubComponents>

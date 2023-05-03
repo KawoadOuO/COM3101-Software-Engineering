@@ -21,7 +21,13 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
 import hsuadddrop.Controller;
+import hsuadddrop.model.database.SessionDAO;
 import hsuadddrop.model.database.StaffDAO;
+import java.sql.SQLException;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -46,6 +52,7 @@ public class MainUI extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        list1 = new java.awt.List();
         bt_drop = new javax.swing.JButton();
         dt_adddrop = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -59,6 +66,7 @@ public class MainUI extends javax.swing.JFrame {
         bt_add = new javax.swing.JButton();
         label_time = new javax.swing.JLabel();
         bt_checkstudent = new javax.swing.JButton();
+        bt_import = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -84,11 +92,11 @@ public class MainUI extends javax.swing.JFrame {
                 {null, null, null, null, null, null, null}
             },
             new String [] {
-                "Module Code", "Name", "Session", "Teacher", "Weekday", "Time", "Capacity"
+                "Course Code", "Course Name", "Session ID", "Teacher", "Weekday", "Time", "Capacity"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Integer.class
+                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Object.class, java.lang.Object.class, java.lang.Integer.class
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -98,7 +106,7 @@ public class MainUI extends javax.swing.JFrame {
         jScrollPane1.setViewportView(table);
 
         label_welcome.setFont(new java.awt.Font("Microsoft JhengHei UI", 0, 14)); // NOI18N
-        label_welcome.setText("Welcome, (Staff Name/ID)");
+        label_welcome.setText("(Staff Name)");
 
         label_sid.setFont(new java.awt.Font("Microsoft JhengHei UI", 0, 14)); // NOI18N
         label_sid.setText("Student ID:");
@@ -130,12 +138,19 @@ public class MainUI extends javax.swing.JFrame {
             }
         });
 
-        label_time.setText("2023/5/2 12:53");
+        label_time.setText("(Login Time)");
 
         bt_checkstudent.setText("Check  Student Info");
         bt_checkstudent.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 bt_checkstudentActionPerformed(evt);
+            }
+        });
+
+        bt_import.setText("Import Data");
+        bt_import.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bt_importActionPerformed(evt);
             }
         });
 
@@ -158,16 +173,18 @@ public class MainUI extends javax.swing.JFrame {
                                 .addComponent(label_time, javax.swing.GroupLayout.PREFERRED_SIZE, 266, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(0, 0, Short.MAX_VALUE))
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(label_welcome, javax.swing.GroupLayout.DEFAULT_SIZE, 356, Short.MAX_VALUE)
-                                .addGap(18, 18, 18)
+                                .addComponent(label_welcome, javax.swing.GroupLayout.DEFAULT_SIZE, 150, Short.MAX_VALUE)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(layout.createSequentialGroup()
+                                        .addGap(179, 179, 179)
                                         .addComponent(label_sid, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addGap(18, 18, 18)
                                         .addComponent(tf_studentid, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE))
                                     .addGroup(layout.createSequentialGroup()
-                                        .addGap(21, 21, 21)
-                                        .addComponent(bt_add)
+                                        .addGap(245, 245, 245)
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                            .addComponent(bt_import)
+                                            .addComponent(bt_add))
                                         .addGap(18, 18, 18)
                                         .addComponent(bt_drop)))
                                 .addGap(27, 27, 27)
@@ -191,26 +208,29 @@ public class MainUI extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
-                                .addGap(16, 16, 16)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(tf_studentid, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(label_sid, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(bt_checkstudent, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addGap(17, 17, 17)
+                                .addComponent(bt_checkstudent, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(layout.createSequentialGroup()
                                 .addContainerGap()
-                                .addComponent(label_AHCC, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 36, Short.MAX_VALUE)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(label_AHCC, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(tf_studentid, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(label_sid, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 28, Short.MAX_VALUE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(label_welcome, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(bt_add, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(bt_drop, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(dt_adddrop, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(bt_checkcourse, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(label_time, javax.swing.GroupLayout.PREFERRED_SIZE, 17, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)))
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(label_time, javax.swing.GroupLayout.PREFERRED_SIZE, 17, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(bt_import, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(12, 12, 12)))
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 302, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(46, Short.MAX_VALUE))
+                .addContainerGap(35, Short.MAX_VALUE))
         );
 
         pack();
@@ -233,7 +253,11 @@ public class MainUI extends javax.swing.JFrame {
 
     private void bt_addActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_addActionPerformed
         if (checkStudent() == true) {
-            controller.AddCourse();
+            try {
+                controller.addCourse();
+            } catch (SQLException ex) {
+                Logger.getLogger(MainUI.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }//GEN-LAST:event_bt_addActionPerformed
 
@@ -244,9 +268,17 @@ public class MainUI extends javax.swing.JFrame {
 
     private void bt_dropActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_dropActionPerformed
         if (checkStudent() == true) {
-            controller.DropCourse();
+            try {
+                controller.dropCourse();
+            } catch (SQLException ex) {
+                Logger.getLogger(MainUI.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }//GEN-LAST:event_bt_dropActionPerformed
+
+    private void bt_importActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_importActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_bt_importActionPerformed
 
 //    public static void main(String args[]) {
 //        /* Set the Nimbus look and feel */
@@ -286,6 +318,7 @@ public class MainUI extends javax.swing.JFrame {
     private javax.swing.JButton bt_checkcourse;
     private javax.swing.JButton bt_checkstudent;
     private javax.swing.JButton bt_drop;
+    private javax.swing.JButton bt_import;
     private javax.swing.JButton bt_logout;
     private javax.swing.JButton dt_adddrop;
     private javax.swing.JScrollPane jScrollPane1;
@@ -293,6 +326,7 @@ public class MainUI extends javax.swing.JFrame {
     private javax.swing.JLabel label_sid;
     private javax.swing.JLabel label_time;
     private javax.swing.JLabel label_welcome;
+    private java.awt.List list1;
     private javax.swing.JTable table;
     private javax.swing.JTextField tf_studentid;
     // End of variables declaration//GEN-END:variables
@@ -312,6 +346,25 @@ public class MainUI extends javax.swing.JFrame {
         label_welcome.setText(s);
     }
 
+    public void setTimeText(String time) {
+        label_time.setText(time);
+    }
+
+    public void updateTable() {
+            DefaultTableModel model = new DefaultTableModel();
+            model.addColumn("Course Code");
+            model.addColumn("Session ID");
+            model.addColumn("Course Name");
+            model.addColumn("Time");
+            model.addColumn("Weekday");
+            model.addColumn("Teacher");
+            model.addColumn("Capacity");
+    }
+
+    public void setTableModel(DefaultTableModel model){
+            table.setModel(model);            
+    }
+    
     public void displayErrorMessage(String message) {
         JOptionPane.showMessageDialog(rootPane, message);
     }

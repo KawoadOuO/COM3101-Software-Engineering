@@ -4,6 +4,7 @@ import hsuadddrop.model.*;
 import hsuadddrop.model.database.AddDropEntryDAO;
 import hsuadddrop.model.database.CourseDAO;
 import hsuadddrop.model.database.DatabaseConnection;
+import hsuadddrop.model.database.SessionDAO;
 import hsuadddrop.model.database.StaffDAO;
 import hsuadddrop.view.MainUI;
 import java.awt.BorderLayout;
@@ -12,6 +13,8 @@ import java.awt.GridLayout;
 import java.sql.Connection;
 
 import java.sql.SQLException;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.Hashtable;
 import java.util.List;
 import javax.swing.JFrame;
@@ -20,6 +23,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.table.DefaultTableModel;
 
 public class Controller {
 
@@ -107,7 +111,23 @@ public class Controller {
             Staff loginStaff = new StaffDAO(DatabaseConnection.getInstance().getConnection()).getStaff(staffID);
             if (loginStaff != null) {
                 if (loginStaff.getPassword().equals(password)) {
-                    view.setWelcomeText(getStaffName(staffID));
+
+                    view.setWelcomeText("Staff : " + getStaffName(staffID));
+
+                    int day, month, year;
+                    int second, minute, hour;
+
+                    GregorianCalendar gc = new GregorianCalendar();
+                    day = gc.get(Calendar.DAY_OF_MONTH);
+                    month = gc.get(Calendar.MONTH) + 1;
+                    year = gc.get(Calendar.YEAR);
+                    second = gc.get(Calendar.SECOND);
+                    minute = gc.get(Calendar.MINUTE);
+                    hour = gc.get(Calendar.HOUR_OF_DAY);
+
+                    String time = "Login Time : " + year + "/" + month + "/" + day + "   " + hour + ":" + minute + ":" + second;
+                    view.setTimeText(time);
+
                     return true;
                 }
             }
@@ -188,7 +208,35 @@ public class Controller {
         }
     }
 
-    public void AddCourse() throws SQLException {
+
+    public void updateCourse() throws SQLException {
+        Connection conn = DatabaseConnection.getInstance().getConnection();
+        DefaultTableModel model = (DefaultTableModel) new DefaultTableModel();
+            model.addColumn("Course Code");
+            model.addColumn("Session ID");
+            model.addColumn("Course Name");
+            model.addColumn("Time");
+            model.addColumn("Weekday");
+            model.addColumn("Teacher");
+            model.addColumn("Capacity");
+            
+        List<Session> allsession = new SessionDAO(conn).getAllSession();
+        System.out.println(allsession.size());
+        for (Session session : allsession) {
+            String courseCode = session.getCourseCode();
+            String sessionID = session.getSessionID();
+            String courseName = new CourseDAO(conn).getCourseByCourseCode(courseCode).getCourseName();
+            String time = session.getTime().toString();
+            String weekday = session.getWeekday().toString();
+            String teacher = session.getTeacher();
+            int capacity = session.getCapacity();
+            String[] row = {courseCode, sessionID, courseName,time, weekday, teacher,Integer.toString(capacity)};
+            model.addRow(row);
+        }
+        view.setTableModel(model);
+    }
+
+    public void addCourse() throws SQLException {
         boolean addModuleDisplayed = false;
         if (addModuleDisplayed) {
         }
@@ -246,7 +294,7 @@ public class Controller {
                     continue;
                 }
                 String session = details[1];
-                
+
                 addModuleDisplayed = true;
 
                 displaySuccessMessage("Add Module Successfully for " + view.getStudentID()
@@ -260,7 +308,7 @@ public class Controller {
 
     }
 
-    public void DropCourse() throws SQLException {
+    public void dropCourse() throws SQLException {
         boolean dropModuleDisplayed = false;
         if (dropModuleDisplayed) {
         }
@@ -325,4 +373,9 @@ public class Controller {
             }
         }
     }
+
+    public void showAllSession() {
+
+    }
+
 }
