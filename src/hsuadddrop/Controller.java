@@ -472,15 +472,16 @@ public class Controller {
                         continue;
                     }
                     String add_courseCode = add_details[0];
-                    if (new CourseDAO(conn).getCourseByCourseCode(add_courseCode) == null) {
-                        displayErrorMessage("There is no this course with course Code : " + add_courseCode);
-                        continue;
-                    }
+                    
                     if (add_details[1].isEmpty()) {
                         displayErrorMessage("Add Session can't be empty");
                         continue;
                     }
                     String add_session = add_details[1];
+                    if (new SessionDAO(conn).getSessionByID(add_courseCode, add_session) == null) {
+                        displayErrorMessage("There is no this course with course Code : " + add_courseCode);
+                        continue;
+                    }
 
                     String drop_input = tf_drop_input.getText().toUpperCase();
                     String[] drop_details = drop_input.split("-");
@@ -493,27 +494,41 @@ public class Controller {
                         continue;
                     }
                     String drop_courseCode = drop_details[0];
-                    if (new CourseDAO(conn).getCourseByCourseCode(drop_courseCode) == null) {
-                        displayErrorMessage("There is no this course with course Code : " + drop_courseCode);
-                        continue;
-                    }
                     if (drop_details[1].isEmpty()) {
                         displayErrorMessage("Drop Session can't be empty");
                         continue;
                     }
                     String drop_session = drop_details[1];
+                    if (new SessionDAO(conn).getSessionByID(drop_courseCode, drop_session) == null) {
+                        displayErrorMessage("There is no this course with course Code : " + drop_courseCode);
+                        continue;
+                    }
+                    
 
                     addDropModuleDisplayed = true;
 
-                    displaySuccessMessage("Add Module Successfully for " + view.getStudentID()
-                            + "\nAdd Module Code: " + add_courseCode
-                            + "\nAdd Module Name: " + new CourseDAO(conn).getCourseByCourseCode(add_courseCode).getCourseName()
-                            + "\nAdd Session: " + add_session
-                            + "\n"
-                            + "\nDrop Module Code: " + drop_courseCode
-                            + "\nDrop Module Name: " + new CourseDAO(conn).getCourseByCourseCode(drop_courseCode).getCourseName()
-                            + "\nDrop Session: " + drop_session);
-                    break;
+                    Student student = new StudentDAO(conn).getStudentByID(view.getStudentID());
+                    
+                    Session session_add = new SessionDAO(conn).getSessionByID(add_courseCode, add_session);
+                    Session session_drop = new SessionDAO(conn).getSessionByID(drop_courseCode, drop_session);
+                    String checkMessage = new EnrollmentDAO(conn).checkALL(student, session_add, add_courseCode, add_session);
+
+                    if (checkMessage.equals("All checks passed.")) {
+                        new AddDropEntryDAO(conn).addEntry(new AddDropEntry(student, session_add, session_drop));
+                        view.displaySuccessMessage("Add/Drop Module Request Made Successfully for " + view.getStudentID()
+                                + "\nAdd Module Code: " + add_courseCode
+                                + "\nAdd Module Name: " + new CourseDAO(conn).getCourseByCourseCode(add_courseCode).getCourseName()
+                                + "\nAdd Session: " + add_session
+                                + "\n"
+                                + "\nDrop Module Code: " + drop_courseCode
+                                + "\nDrop Module Name: " + new CourseDAO(conn).getCourseByCourseCode(drop_courseCode).getCourseName()
+                                + "\nDrop Session: " + drop_session);
+                        break;
+                    } else {
+                        displayErrorMessage(checkMessage);
+                        continue;
+                    }
+
                 }
             } catch (SQLException e) {
                 throw new RuntimeException(e);
@@ -529,6 +544,7 @@ public class Controller {
     }
 
     public void showStudentInfo() throws SQLException {
+
         Connection conn = DatabaseConnection.getInstance().getConnection();
         DefaultTableModel model = (DefaultTableModel) new DefaultTableModel();
         model.addColumn("Course Code");
@@ -539,39 +555,46 @@ public class Controller {
         model.addColumn("Teacher");
 
         String studentID = view.getStudentID();
-        String name = new StudentDAO(conn).getStudentByID(studentID).getStudentName();
-        String gender = new StudentDAO(conn).getStudentByID(studentID).getGender();
-
         Student student = new StudentDAO(conn).getStudentByID(studentID);
-        if (student != null) {
-            List<Session> allsession = new SessionDAO(conn).getRegisteredSessions(student);
-            for (Session session : allsession) {
-                String courseCode = session.getCourseCode();
-                String sessionID = session.getSessionID();
-                String courseName = new CourseDAO(conn).getCourseByCourseCode(courseCode).getCourseName();
-                String time = session.getTime().toString();
-                String weekday = session.getWeekday().toString();
-                String teacher = session.getTeacher();
-                String[] row = {courseCode, sessionID, courseName, time, weekday, teacher};
-                model.addRow(row);
-            }
-            JTable table = new JTable(model);
-            TableColumn courseNameColumn = table.getColumnModel().getColumn(2);
-            courseNameColumn.setPreferredWidth(250);
-            JScrollPane scrollPane = new JScrollPane(table);
-            scrollPane.setPreferredSize(new Dimension(600, 200));
-            String message = "<html>Student Info: <br/>"
-                    + "Student ID: " + studentID + "<br/>"
-                    + "Student Name: " + name + "<br/>"
-                    + "Gender: " + gender + "</html>";
-            JLabel messagelabel = new JLabel(message);
-            JPanel panel = new JPanel();
-            panel.add(messagelabel);
-            panel.add(scrollPane);
-            panel.add(Box.createVerticalStrut(5));
+        try {
+            if (student == null) {
+                displayErrorMessage("There is no this student with student ID : " + studentID);
+            } else {
+                String name = new StudentDAO(conn).getStudentByID(studentID).getStudentName();
+                String gender = new StudentDAO(conn).getStudentByID(studentID).getGender();
 
-            displayStudentInfo("Student Info of " + studentID, panel);
-        } else {
+                if (student != null) {
+                    List<Session> allsession = new SessionDAO(conn).getRegisteredSessions(student);
+                    for (Session session : allsession) {
+                        String courseCode = session.getCourseCode();
+                        String sessionID = session.getSessionID();
+                        String courseName = new CourseDAO(conn).getCourseByCourseCode(courseCode).getCourseName();
+                        String time = session.getTime().toString();
+                        String weekday = session.getWeekday().toString();
+                        String teacher = session.getTeacher();
+                        String[] row = {courseCode, sessionID, courseName, time, weekday, teacher};
+                        model.addRow(row);
+                    }
+                    JTable table = new JTable(model);
+                    TableColumn courseNameColumn = table.getColumnModel().getColumn(2);
+                    courseNameColumn.setPreferredWidth(250);
+                    JScrollPane scrollPane = new JScrollPane(table);
+                    scrollPane.setPreferredSize(new Dimension(600, 200));
+                    String message = "<html>Student Info: <br/>"
+                            + "Student ID: " + studentID + "<br/>"
+                            + "Student Name: " + name + "<br/>"
+                            + "Gender: " + gender + "</html>";
+                    JLabel messagelabel = new JLabel(message);
+                    JPanel panel = new JPanel();
+                    panel.add(messagelabel);
+                    panel.add(scrollPane);
+                    panel.add(Box.createVerticalStrut(5));
+
+                    displayStudentInfo("Student Info of " + studentID, panel);
+                }
+            }
+
+        } catch (SQLException e) {
             displayErrorMessage("Wrong input of Student ");
         }
 
@@ -666,27 +689,27 @@ public class Controller {
                                 String[] row = {student_id, student_name, student_gender};
                                 model.addRow(row);
                             }
-                                JTable table = new JTable(model);
-                                TableColumn courseNameColumn = table.getColumnModel().getColumn(2);
-                                courseNameColumn.setPreferredWidth(250);
-                                JScrollPane scrollPane = new JScrollPane(table);
-                                scrollPane.setPreferredSize(new Dimension(600, 200));
-                                String message = "<html>Course Info: <br/>"
-                                        + "Course Code: " + course_code + "<br/>"
-                                        + "Course Name: " + course_name + "<br/>"
-                                        + "Weekday: " + weekday + "<br/>"
-                                        + "Time: " + time + "<br/>"
-                                        + "Teacher: " + teacher + "<br/>"
-                                        + "Capacity: " + capacity + "</html>";
-                                JLabel messagelabel = new JLabel(message);
-                                JPanel panel = new JPanel();
-                                panel.add(messagelabel);
-                                panel.add(scrollPane);
-                                panel.add(Box.createVerticalStrut(5));
+                            JTable table = new JTable(model);
+                            TableColumn courseNameColumn = table.getColumnModel().getColumn(2);
+                            courseNameColumn.setPreferredWidth(250);
+                            JScrollPane scrollPane = new JScrollPane(table);
+                            scrollPane.setPreferredSize(new Dimension(600, 200));
+                            String message = "<html>Course Info: <br/>"
+                                    + "Course Code: " + course_code + "<br/>"
+                                    + "Course Name: " + course_name + "<br/>"
+                                    + "Weekday: " + weekday + "<br/>"
+                                    + "Time: " + time + "<br/>"
+                                    + "Teacher: " + teacher + "<br/>"
+                                    + "Capacity: " + capacity + "</html>";
+                            JLabel messagelabel = new JLabel(message);
+                            JPanel panel = new JPanel();
+                            panel.add(messagelabel);
+                            panel.add(scrollPane);
+                            panel.add(Box.createVerticalStrut(5));
 
-                                displayCourseInfo("Course Info of " + course_code, panel);
-                                break;
-                            
+                            displayCourseInfo("Course Info of " + course_code, panel);
+                            break;
+
                         }
                     } else {
                         displayErrorMessage("No courses found with that sessions");

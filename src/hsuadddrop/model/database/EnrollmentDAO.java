@@ -43,8 +43,42 @@ public class EnrollmentDAO {
         return sessions;
     }
 
+    public List<Session> getEnrollmentByStudentID(Student student) throws SQLException {
+        List<Session> sessions = new ArrayList<>();
+        PreparedStatement statement = conn.prepareStatement("SELECT * FROM enrollment WHERE student_id = ?");
+        statement.setString(1, student.getStudentID());
+        ResultSet rs = statement.executeQuery();
+        while (rs.next()) {
+            String sessionID = rs.getString("session_id");
+            String courseCode = rs.getString("course_code");
+            Session session = new SessionDAO(conn).getSessionByID(courseCode, sessionID);
+            sessions.add(session);
+        }
+        return sessions;
+    }
+
+    public List<Enrollment> getEnrollmentBySession(Student student, Session session) throws SQLException {
+
+        String courseCode = session.getCourseCode();
+        String sessionID = session.getSessionID();
+
+        PreparedStatement statement = conn.prepareStatement("SELECT * FROM enrollment WHERE session = ?");
+        statement.setString(1, session.getCourseCode());
+        ResultSet rs = statement.executeQuery();
+
+        List<Enrollment> enrollments = new ArrayList<>();
+        while (rs.next()) {
+            String student_id = rs.getString("student_id");
+            Enrollment enrollment = new Enrollment(student_id, courseCode, sessionID);
+            enrollments.add(enrollment);
+        }
+        return enrollments;
+    }
+
+//        if (!new StudentDAO(conn).checkRegistered(session)) {
+//
+//        }
     public void addEnrollment(Student student, Session session) throws SQLException {
-        Connection conn = DatabaseConnection.getInstance().getConnection();
         try {
             if (!checkNotSame(student, session.getCourseCode(), session.getSessionID())) {
                 throw new SQLException("The student is already enrolled in this course");
@@ -182,26 +216,29 @@ public class EnrollmentDAO {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return false;
+        return true;
     }
 
     public boolean checkNotConflict(Student student, Session session, String course_code, String session_id) throws SQLException {
         try {
-            PreparedStatement stmt = conn.prepareStatement("SELECT session.capacity, session.weekday, session.time, "
-                    + "COUNT(enrollment.student_id) AS count FROM session "
-                    + "LEFT JOIN enrollment ON session.course_code = enrollment.course_code AND session.session_id = enrollment.session_id "
-                    + "WHERE session.course_code = ? AND session.session_id = ? "
-                    + "GROUP BY session.capacity");
-            stmt.setString(1, course_code);
-            stmt.setString(2, session_id);
+            PreparedStatement stmt = conn.prepareStatement("SELECT * from enrollment WHERE student_id = ?");
+
+            //"SELECT session.weekday, session.time FROM enrollment WHERE session.course_code = ? AND session.session_id = ?" 
+            stmt.setString(1, student.getStudentID());
             ResultSet rs = stmt.executeQuery();
 
             // iv) There is no conflict in the course day and time with other courses that he has enrolled in.
             while (rs.next()) {
-                String weekday = rs.getString("Weekday");
-                String time = rs.getString("Time");
 
-                if (!weekday.equals(session.getWeekday()) || !time.equals(session.getTime())) {
+                String courseCode = rs.getString("course_code");
+                session_id = rs.getString("session_id");
+
+                
+                session = new SessionDAO(conn).getSessionByID(courseCode, session_id);
+                TimeOfDay time = session.getTime();
+                Weekday week = session.getWeekday();
+
+                if (!week.equals(session.getWeekday()) || !time.equals(session.getTime())) {
                     return false; // course time and weekday are confused
                 }
             }

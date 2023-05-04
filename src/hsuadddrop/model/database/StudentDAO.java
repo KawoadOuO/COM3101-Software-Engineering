@@ -49,6 +49,7 @@ public class StudentDAO {
             return null;
         }
     }
+    
 
     public List<Student> getAllStudents() throws SQLException {
         List<Student> students = new ArrayList<>();
@@ -65,6 +66,10 @@ public class StudentDAO {
 
     public List<Session> getRegisteredSessions(Student student) {
         return new SessionDAO(conn).getRegisteredSessions(student);
+    }
+    
+    public boolean checkRegistered(Student student, Session session){
+        return getRegisteredSessions(student).contains(session);
     }
 
     public void addSession(Student student, Session sessionToAdd) throws SQLException {
