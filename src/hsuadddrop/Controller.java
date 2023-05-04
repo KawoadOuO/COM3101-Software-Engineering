@@ -21,6 +21,7 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.swing.Box;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -648,7 +649,7 @@ public class Controller {
                     if (!new CourseDAO(conn).getCoursesWithSessions().isEmpty()) {
 
                         List<Course> course = new CourseDAO(conn).getCoursesWithSessions();
-                        Course allstudent = new CourseDAO(conn).getCourseByCodeSection(course_code, session_id);
+                        List<Student> allstudent = new StudentDAO(conn).getAllStudents().stream().filter(s -> s.getRegisteredSessions().contains(session)).collect(Collectors.toList());
 
                         if (!course.isEmpty()) {
 

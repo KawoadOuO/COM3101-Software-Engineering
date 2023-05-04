@@ -12,6 +12,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class DataImport {
     private final Connection connection;
@@ -51,13 +52,17 @@ public class DataImport {
                 String tableName = row.get("table");
                 row.remove("table");
                 String columns = String.join(", ", row.keySet());
-                String values = String.join(", ", row.values());
+                // ("valud1", "value2", "value3")
+                String values = row.values().stream()
+                        .map(value -> String.format("'%s'", value))
+                        .collect(Collectors.joining(", "));
                 String sql = String.format("(%s)", values);
 
                 // Add SQL statement to list for this table
                 if (!sqlStatements.containsKey(tableName)) {
                     sqlStatements.put(tableName, new ArrayList<>());
                     tableNames.add(tableName);
+                    sqlStatements.get(tableName).add(String.format("(%s)", columns));
                     totalTables++;
                 }
                 sqlStatements.get(tableName).add(sql);
@@ -77,6 +82,7 @@ public class DataImport {
                         Statement stmt = connection.createStatement();
                         for (String tableName : sqlStatements.keySet()) {
                             String sql = getValuesList(sqlStatements, tableName);
+                            System.out.println("sql = " + sql);
                             stmt.addBatch(sql);
                         }
 
@@ -94,7 +100,7 @@ public class DataImport {
                         JOptionPane.showMessageDialog(null, message, "Import complete", JOptionPane.INFORMATION_MESSAGE);
 
                     } catch (SQLException e) {
-                        e.printStackTrace();
+                        e.printStackTrace(); 
                     }
                 }
             }
@@ -134,7 +140,6 @@ public class DataImport {
         List<String> allSqlStatements = new ArrayList<>();
         for (String tableName : sqlStatements.keySet()) {
             String sql = getValuesList(sqlStatements, tableName);
-            System.out.println("sql = " + sql);
             allSqlStatements.add(sql);
         }
         return allSqlStatements;
@@ -143,11 +148,11 @@ public class DataImport {
     private String getValuesList(Map<String, List<String>> sqlStatements, String tableName) {
         List<String> valuesList = sqlStatements.get(tableName);
         String[] columns = valuesList.get(0).substring(1, valuesList.get(0).length() - 1).split(", ");
-        String values = String.join(", ", valuesList);
+        String values = String.join(", ", valuesList.subList(1, valuesList.size()));
         String columnList = String.join(", ", columns);
 
         // format the values in rows
         values = values.replaceAll("\\),", "\\),\n");
-        return String.format("INSERT INTO %s (%s) VALUES %s", tableName, columnList, values);
+        return String.format("INSERT INTO %s (%s) VALUES%n %s;", tableName, columnList, values);
     }
 }
