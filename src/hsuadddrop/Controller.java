@@ -9,6 +9,7 @@ import hsuadddrop.model.database.SessionDAO;
 import hsuadddrop.model.database.StaffDAO;
 import hsuadddrop.model.database.StudentDAO;
 import hsuadddrop.model.database.data.DataImport;
+import hsuadddrop.model.database.data.EditTable;
 import hsuadddrop.view.MainUI;
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -113,6 +114,30 @@ public class Controller {
         return true;
     }
 
+    public String getTime() {
+        int day, month, year;
+        int second, minute, hour;
+
+        GregorianCalendar gc = new GregorianCalendar();
+        day = gc.get(Calendar.DAY_OF_MONTH);
+        month = gc.get(Calendar.MONTH) + 1;
+        year = gc.get(Calendar.YEAR);
+        second = gc.get(Calendar.SECOND);
+        minute = gc.get(Calendar.MINUTE);
+        hour = gc.get(Calendar.HOUR_OF_DAY);
+
+        String time = "Login Time : " + year + "/" + month + "/" + day + "   " + hour + ":" + minute + ":" + second;
+        return time;
+
+    }
+    public void updateTimeAndName(String staffID) throws SQLException{
+        view.setTimeText(getTime());
+        view.setNameText(getStaffName(staffID));
+    
+    }
+    
+    
+
     public boolean login(String staffID, String password) {
         // check credentials in database
         // if valid, return true
@@ -122,21 +147,9 @@ public class Controller {
             if (loginStaff != null) {
                 if (loginStaff.getPassword().equals(password)) {
 
-                    view.setWelcomeText("Staff : " + getStaffName(staffID));
-
-                    int day, month, year;
-                    int second, minute, hour;
-
-                    GregorianCalendar gc = new GregorianCalendar();
-                    day = gc.get(Calendar.DAY_OF_MONTH);
-                    month = gc.get(Calendar.MONTH) + 1;
-                    year = gc.get(Calendar.YEAR);
-                    second = gc.get(Calendar.SECOND);
-                    minute = gc.get(Calendar.MINUTE);
-                    hour = gc.get(Calendar.HOUR_OF_DAY);
-
-                    String time = "Login Time : " + year + "/" + month + "/" + day + "   " + hour + ":" + minute + ":" + second;
-                    view.setTimeText(time);
+                    view.setNameText("Staff : " + getStaffName(staffID));
+                    
+                    view.setTimeText(getTime());
 
                     return true;
                 }
@@ -161,6 +174,7 @@ public class Controller {
     }
 
     public void displayErrorMessage(String message) {
+
         JOptionPane.showMessageDialog(rootPane, message);
     }
 
@@ -226,8 +240,52 @@ public class Controller {
         }
     }
 
+    public void debug() throws SQLException {
+        view.setTimeText(getTime());
+        boolean loginPageDisplayed = false;
+        if (loginPageDisplayed) {
+            // Return the login information without displaying the login page again
+        }
+        while (true) {
+            Connection conn = DatabaseConnection.getInstance().getConnection();
+            JPanel panel = new JPanel(new BorderLayout(5, 5));
+            JPanel label = new JPanel(new GridLayout(0, 1, 2, 2));
+            label.add(new JLabel("Table", SwingConstants.RIGHT));
+            panel.add(label, BorderLayout.WEST);
+
+            JPanel controls = new JPanel(new GridLayout(0, 1, 2, 2));
+            JTextField input = new JTextField();
+            controls.add(input);
+            panel.add(controls, BorderLayout.CENTER);
+            JFrame frame = null;
+            int result = JOptionPane.showConfirmDialog(frame, panel, "Debug", JOptionPane.OK_CANCEL_OPTION);
+
+            if (result == JOptionPane.CLOSED_OPTION) {
+                break;
+            }
+
+            if (result == JOptionPane.CANCEL_OPTION) {
+                break;
+            }
+            if (result == JOptionPane.OK_OPTION) {
+                String tf_input = input.getText();
+                if (tf_input.isEmpty()) {
+                    displayErrorMessage("Can't be empty");
+                    continue;
+                } else {
+                    new EnrollmentDAO(conn).InputData(tf_input);
+                    loginPageDisplayed = false;
+                    break;
+                }
+
+            }
+
+        }
+    }
+
     public void updateCourse() throws SQLException {
         try {
+            view.setTimeText(getTime());
             Connection conn = DatabaseConnection.getInstance().getConnection();
             DefaultTableModel model = (DefaultTableModel) new DefaultTableModel();
             model.addColumn("Course Code");
@@ -277,12 +335,10 @@ public class Controller {
             int result = JOptionPane.showConfirmDialog(frame, panel, "Add Module", JOptionPane.OK_CANCEL_OPTION);
 
             if (result == JOptionPane.CLOSED_OPTION) {
-                displayErrorMessage("Add Module Cancelled");
                 break;
             }
 
             if (result == JOptionPane.CANCEL_OPTION) {
-                displayErrorMessage("Add Module Cancelled");
                 break;
             }
             try {
@@ -362,12 +418,10 @@ public class Controller {
             int result = JOptionPane.showConfirmDialog(frame, panel, "Drop Module", JOptionPane.OK_CANCEL_OPTION);
 
             if (result == JOptionPane.CLOSED_OPTION) {
-                displayErrorMessage("Drop Module Cancelled");
                 break;
             }
 
             if (result == JOptionPane.CANCEL_OPTION) {
-                displayErrorMessage("Drop Module Cancelled");
                 break;
             }
             try {
@@ -384,48 +438,50 @@ public class Controller {
                         displayErrorMessage("Course Code can't be empty");
                         continue;
                     }
-                    String courseCode = details[0];
+                    String course_code = details[0];
 
-                    if (new CourseDAO(conn).getCourseByCourseCode(courseCode) == null) {
-                        displayErrorMessage("There is no this course with course Code : " + courseCode);
+                    if (new CourseDAO(conn).getCourseByCourseCode(course_code) == null) {
+                        displayErrorMessage("There is no this course with course Code : " + course_code);
                         continue;
                     }
                     if (details[1].isEmpty()) {
                         displayErrorMessage("Session can't be empty");
                         continue;
                     }
-                    String session = details[1];
+                    String session_id = details[1];
 
-                    //controller.processAddDropEntries();
                     dropModuleDisplayed = true;
 
                     Student student = new StudentDAO(conn).getStudentByID(view.getStudentID());
-                    Session sessionDAO = new SessionDAO(conn).getSessionByID(courseCode, session);
+                    Session session_drop = new SessionDAO(conn).getSessionByID(course_code, session_id);
+                    String checkMessage = new EnrollmentDAO(conn).checkHadRegisteredSession(student, course_code, session_id);
 
-                    new EnrollmentDAO(conn).dropEnrollment(student, sessionDAO);
-                    try{displaySuccessMessage("Drop Module Successfully for " + view.getStudentID()
-                            + "\nModule Code: " + courseCode
-                            + "\nModule Name: " + new CourseDAO(conn).getCourseByCourseCode(courseCode).getCourseName()
-                            + "\nSession: " + session);}
-                
-                catch(SQLException e){
-                    throw new RuntimeException(e);
-                    }
-                        
+                    if (checkMessage.equals("Have Course")) {
+                        try {
+                            System.out.println("Dropping?");
+                            new EnrollmentDAO(conn).dropEnrollment(student, session_drop);
+                            displaySuccessMessage("Drop Module Successfully for " + view.getStudentID()
+                                    + "\nModule Code: " + course_code
+                                    + "\nModule Name: " + new CourseDAO(conn).getCourseByCourseCode(course_code).getCourseName()
+                                    + "\nSession: " + session_id);
+                        } catch (SQLException e) {
+                            throw new RuntimeException(e);
+                        }
+
+                    } else {
+                        displayErrorMessage(checkMessage);
                     }
 
-                    
-                    break;
+                }
 
-                
-            } 
-            catch(SQLException e){
-                    throw new RuntimeException(e);
-                    }
+                break;
+
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
 
         }
     }
-    
 
     public void addDropCourse() throws SQLException {
 
@@ -456,12 +512,10 @@ public class Controller {
             int result = JOptionPane.showConfirmDialog(frame, panel, "Add/Drop Module", JOptionPane.OK_CANCEL_OPTION);
 
             if (result == JOptionPane.CLOSED_OPTION) {
-                displayErrorMessage("Add/Drop Module Cancelled");
                 break;
             }
 
             if (result == JOptionPane.CANCEL_OPTION) {
-                displayErrorMessage("Add/Drop Module Cancelled");
                 break;
             }
             try {
@@ -480,7 +534,7 @@ public class Controller {
                         continue;
                     }
                     String add_courseCode = add_details[0];
-                    
+
                     if (add_details[1].isEmpty()) {
                         displayErrorMessage("Add Session can't be empty");
                         continue;
@@ -511,23 +565,20 @@ public class Controller {
                         displayErrorMessage("There is no this course with course Code : " + drop_courseCode);
                         continue;
                     }
-                    
 
                     addDropModuleDisplayed = true;
 
                     Student student = new StudentDAO(conn).getStudentByID(view.getStudentID());
-                    
+
                     Session session_add = new SessionDAO(conn).getSessionByID(add_courseCode, add_session);
                     Session session_drop = new SessionDAO(conn).getSessionByID(drop_courseCode, drop_session);
                     String checkMessage = new EnrollmentDAO(conn).checkALL(student, session_add, add_courseCode, add_session);
-                    
 
                     if (checkMessage.equals("All checks passed.")) {
-                        
-                        
-                        new EnrollmentDAO(conn).addEnrollment(student, session_add); 
+
+                        new EnrollmentDAO(conn).addEnrollment(student, session_add);
                         new EnrollmentDAO(conn).dropEnrollment(student, session_drop);
-                        
+
                         //new AddDropEntryDAO(conn).addEntry(new AddDropEntry(student, session_add, session_drop));
                         view.displaySuccessMessage("Add/Drop Module Request Made Successfully for " + view.getStudentID()
                                 + "\nAdd Module Code: " + add_courseCode
@@ -571,7 +622,7 @@ public class Controller {
         Student student = new StudentDAO(conn).getStudentByID(studentID);
         try {
             if (student == null) {
-                displayErrorMessage("There is no this student with student ID : " + studentID);
+                displayErrorMessage("There is no this student " + studentID);
             } else {
                 String name = new StudentDAO(conn).getStudentByID(studentID).getStudentName();
                 String gender = new StudentDAO(conn).getStudentByID(studentID).getGender();
@@ -635,12 +686,10 @@ public class Controller {
             int result = JOptionPane.showConfirmDialog(frame, panel_1, "Check Module Status", JOptionPane.OK_CANCEL_OPTION);
 
             if (result == JOptionPane.CLOSED_OPTION) {
-                displayErrorMessage("Check Module Status Cancelled");
                 break;
             }
 
             if (result == JOptionPane.CANCEL_OPTION) {
-                displayErrorMessage("Check Module Status  Cancelled");
                 break;
             }
             try {
@@ -688,31 +737,27 @@ public class Controller {
                         // List<Student> allstudent = new StudentDAO(conn).getAllStudents().stream().filter(s -> s.getRegisteredSessions().contains(session)).collect(Collectors.toList());
                         List<Student> allstudent2 = new StudentDAO(conn).getAllStudents().stream().collect(Collectors.toList());
                         List<Student> allstudent = new ArrayList<>();
-                        for (Student student : allstudent2){
-                            for(Session s :student.getRegisteredSessions() ){
-                                if(s.getCourseCode().equals(course_code)&&s.getSessionID().equals(session_id)){
+                        for (Student student : allstudent2) {
+                            for (Session s : student.getRegisteredSessions()) {
+                                if (s.getCourseCode().equals(course_code) && s.getSessionID().equals(session_id)) {
                                     allstudent.add(student);
                                 }
                             }
                         }
-                        
-                        System.out.println("student:");
-                        System.out.println(allstudent);
+
                         if (!course.isEmpty()) {
-                                
+
                             String course_name = new CourseDAO(conn).getCourseByCourseCode(course_code).getCourseName();
                             Weekday weekday = session.getWeekday();
                             TimeOfDay time = session.getTime();
                             String teacher = session.getTeacher();
                             int capacity = session.getCapacity();
-                            System.out.println("add row???????");
                             for (Student student : allstudent) {
                                 String student_id = student.getStudentID();
                                 String student_name = student.getStudentName();
                                 String student_gender = student.getGender();
                                 String[] row = {student_id, student_name, student_gender};
                                 model.addRow(row);
-                                System.out.println("add row?");
                             }
                             JTable table = new JTable(model);
                             TableColumn courseNameColumn = table.getColumnModel().getColumn(2);

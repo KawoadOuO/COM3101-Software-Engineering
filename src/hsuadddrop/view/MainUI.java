@@ -57,7 +57,7 @@ public class MainUI extends javax.swing.JFrame {
         dt_adddrop = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         table = new javax.swing.JTable();
-        label_welcome = new javax.swing.JLabel();
+        label_name = new javax.swing.JLabel();
         label_sid = new javax.swing.JLabel();
         tf_studentid = new javax.swing.JTextField();
         bt_checkcourse = new javax.swing.JButton();
@@ -67,6 +67,8 @@ public class MainUI extends javax.swing.JFrame {
         label_time = new javax.swing.JLabel();
         bt_checkstudent = new javax.swing.JButton();
         bt_import = new javax.swing.JButton();
+        bt_edit = new javax.swing.JButton();
+        bt_reload = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -89,6 +91,12 @@ public class MainUI extends javax.swing.JFrame {
                 {null, null, null, null, null, null, null},
                 {null, null, null, null, null, null, null},
                 {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null},
                 {null, null, null, null, null, null, null}
             },
             new String [] {
@@ -105,8 +113,8 @@ public class MainUI extends javax.swing.JFrame {
         });
         jScrollPane1.setViewportView(table);
 
-        label_welcome.setFont(new java.awt.Font("Microsoft JhengHei UI", 0, 14)); // NOI18N
-        label_welcome.setText("(Staff Name)");
+        label_name.setFont(new java.awt.Font("Microsoft JhengHei UI", 0, 14)); // NOI18N
+        label_name.setText("(Staff Name)");
 
         label_sid.setFont(new java.awt.Font("Microsoft JhengHei UI", 0, 14)); // NOI18N
         label_sid.setText("Student ID:");
@@ -154,6 +162,20 @@ public class MainUI extends javax.swing.JFrame {
             }
         });
 
+        bt_edit.setText("(debug) import data");
+        bt_edit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bt_editActionPerformed(evt);
+            }
+        });
+
+        bt_reload.setText("Reload table");
+        bt_reload.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bt_reloadActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -170,10 +192,7 @@ public class MainUI extends javax.swing.JFrame {
                         .addGap(11, 11, 11)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(label_time, javax.swing.GroupLayout.PREFERRED_SIZE, 266, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(0, 0, Short.MAX_VALUE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(label_welcome, javax.swing.GroupLayout.DEFAULT_SIZE, 150, Short.MAX_VALUE)
+                                .addComponent(label_name, javax.swing.GroupLayout.DEFAULT_SIZE, 150, Short.MAX_VALUE)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(layout.createSequentialGroup()
                                         .addGap(179, 179, 179)
@@ -186,16 +205,24 @@ public class MainUI extends javax.swing.JFrame {
                                             .addComponent(bt_import)
                                             .addComponent(bt_add))
                                         .addGap(18, 18, 18)
-                                        .addComponent(bt_drop)))
-                                .addGap(27, 27, 27)
+                                        .addComponent(bt_drop))))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(label_time, javax.swing.GroupLayout.PREFERRED_SIZE, 266, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addGap(27, 27, 27)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(bt_checkstudent, javax.swing.GroupLayout.PREFERRED_SIZE, 183, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(113, 113, 113))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addComponent(dt_adddrop)
+                                .addGap(32, 32, 32)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(bt_checkstudent, javax.swing.GroupLayout.PREFERRED_SIZE, 183, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(113, 113, 113))
+                                    .addComponent(bt_checkcourse, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                        .addComponent(dt_adddrop)
-                                        .addGap(32, 32, 32)
-                                        .addComponent(bt_checkcourse, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE)))))))
+                                        .addComponent(bt_edit)
+                                        .addGap(10, 10, 10))
+                                    .addComponent(bt_reload))))))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -219,7 +246,7 @@ public class MainUI extends javax.swing.JFrame {
                                     .addComponent(label_AHCC, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE))))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 28, Short.MAX_VALUE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(label_welcome, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(label_name, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(bt_add, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(bt_drop, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(dt_adddrop, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -227,10 +254,13 @@ public class MainUI extends javax.swing.JFrame {
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(label_time, javax.swing.GroupLayout.PREFERRED_SIZE, 17, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(bt_import, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(bt_import, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(bt_reload))
                         .addGap(12, 12, 12)))
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 302, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(35, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(bt_edit)
+                .addContainerGap())
         );
 
         pack();
@@ -296,6 +326,24 @@ public class MainUI extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_bt_importActionPerformed
 
+    private void bt_editActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_editActionPerformed
+        try {
+            // TODO add your handling code here:
+            controller.debug();
+        } catch (SQLException ex) {
+            Logger.getLogger(MainUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_bt_editActionPerformed
+
+    private void bt_reloadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_reloadActionPerformed
+        try {
+            // TODO add your handling code here:
+            controller.updateCourse();
+        } catch (SQLException ex) {
+            Logger.getLogger(MainUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_bt_reloadActionPerformed
+
 //    public static void main(String args[]) {
 //        /* Set the Nimbus look and feel */
 //        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
@@ -334,14 +382,16 @@ public class MainUI extends javax.swing.JFrame {
     private javax.swing.JButton bt_checkcourse;
     private javax.swing.JButton bt_checkstudent;
     private javax.swing.JButton bt_drop;
+    private javax.swing.JButton bt_edit;
     private javax.swing.JButton bt_import;
     private javax.swing.JButton bt_logout;
+    private javax.swing.JButton bt_reload;
     private javax.swing.JButton dt_adddrop;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel label_AHCC;
+    private javax.swing.JLabel label_name;
     private javax.swing.JLabel label_sid;
     private javax.swing.JLabel label_time;
-    private javax.swing.JLabel label_welcome;
     private java.awt.List list1;
     private javax.swing.JTable table;
     private javax.swing.JTextField tf_studentid;
@@ -357,8 +407,8 @@ public class MainUI extends javax.swing.JFrame {
         }
     }
 
-    public void setWelcomeText(String s) {
-        label_welcome.setText(s);
+    public void setNameText(String s) {
+        label_name.setText(s);
     }
 
     public void setTimeText(String time) {

@@ -26,7 +26,6 @@ public class SessionDAO {
     public Session findSessionByCode(String courseCode) throws SQLException {
         List<Session> sessionList = new ArrayList<>();
         PreparedStatement stmt = conn.prepareStatement("SELECT * FROM session WHERE course_code = " + courseCode);
-        //PreparedStatement stmt = conn.prepareStatement("SELECT * FROM staff WHERE course_code = ?");
         stmt.setString(1, courseCode);
         ResultSet rs = stmt.executeQuery();
 
@@ -34,26 +33,23 @@ public class SessionDAO {
             String course_code = rs.getString("course_code");
             String session_id = rs.getString("session_id");
             String teacher = rs.getString("teacher");
-            //Weekday weekday = rs.getString("weekday");
             Weekday weekday = Weekday.fromDisplayName(rs.getString("weekday"));
-            //TimeOfDay time = rs.getTime("time");
             TimeOfDay time = TimeOfDay.fromDisplayName(rs.getString("time"));
             int capacity = rs.getInt("capacity");
-            //Session(String sessionID, String courseCode, String teacher, int capacity, Weekday weekday, TimeOfDay time)
             Session session = new Session(session_id, course_code, teacher, capacity, weekday, time);
             sessionList.add(session);
-
         }
         return null;
-
     }
 
+    //get session data from database
     public List<Session> getAllSession() throws SQLException {
         List<Session> sessionList = new ArrayList<>();
         PreparedStatement stmt = conn.prepareStatement("SELECT * FROM session");
         ResultSet rs = stmt.executeQuery();
 
         while (rs.next()) {
+            //get value from database
             String course_code = rs.getString("course_code");
             String session_id = rs.getString("session_id");
             String teacher = rs.getString("teacher");

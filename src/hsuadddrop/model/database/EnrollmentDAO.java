@@ -63,7 +63,7 @@ public class EnrollmentDAO {
         String sessionID = session.getSessionID();
 
         PreparedStatement statement = conn.prepareStatement("SELECT * FROM enrollment WHERE course_code = ? AND session_id = ? ");
-        
+
         statement.setString(1, session.getCourseCode());
         statement.setString(2, session.getSessionID());
         ResultSet rs = statement.executeQuery();
@@ -76,6 +76,7 @@ public class EnrollmentDAO {
         }
         return enrollments;
     }
+
     public void addEnrollment(Student student, Session session) throws SQLException {
         try {
             if (!checkNotSame(student, session.getCourseCode(), session.getSessionID())) {
@@ -99,16 +100,58 @@ public class EnrollmentDAO {
 
     public void dropEnrollment(Student student, Session session) throws SQLException {
         Connection conn = DatabaseConnection.getInstance().getConnection();
+        if (!checkNotSame(student, session.getCourseCode(), session.getSessionID())) {
+            System.out.println("try..");
+            try {
+                System.out.println("Deleting..");
+                PreparedStatement stmt = conn.prepareStatement("DELETE FROM enrollment WHERE student_id = ? AND course_code = ? AND session_id = ? ");
+                stmt.setString(1, student.getStudentID());
+                stmt.setString(2, session.getCourseCode());
+                stmt.setString(3, session.getSessionID());
+                stmt.executeUpdate();
+                System.out.println("Deleted..");
+                System.out.println(session.getCourseCode() + session.getSessionID());
+            } catch (SQLException e) {
+            }
+        } else {
+            String course_code = session.getCourseCode();
+            String session_id = session.getSessionID();
+            //Session sessionDAO = new SessionDAO(conn).getSessionByID(course_code, session_id);
+            //String checkMessage = new EnrollmentDAO(conn).checkALL(student, sessionDAO, course_code, session_id);
+        }
+
+    }
+
+    public String checkHadRegisteredSession(Student student, String course_code, String session_id) {
+        boolean have = false;
+        String message;
+        Connection conn = DatabaseConnection.getInstance().getConnection();
         try {
-            PreparedStatement stmt = conn.prepareStatement("DELETE FROM enrollment WHERE student_id = ? AND course_code = ? AND session_id = ?");
+            PreparedStatement stmt = conn.prepareStatement("SELECT COUNT(*) AS Have FROM enrollment WHERE student_id = ? AND course_code = ? AND session_id = ?");
             stmt.setString(1, student.getStudentID());
-            stmt.setString(2, session.getCourseCode());
-            stmt.setString(3, session.getSessionID());
-            stmt.executeUpdate();
+            stmt.setString(2, course_code);
+            stmt.setString(3, session_id);
+
+            ResultSet rs = stmt.executeQuery();
+
+            // i) He is not already enrolled in that course
+            while (rs.next()) {
+                int HaveSame = rs.getInt("Have");
+                System.out.println("Have Same : " + HaveSame);
+                if (HaveSame > 0) {
+                    have = true;
+                }
+            }
 
         } catch (SQLException e) {
-            e.printStackTrace();
         }
+        if (have) {
+            return "Have Course";
+        } else {
+            message = "Student haven't register this course";
+            return message;
+        }
+
     }
 
     public String checkALL(Student student, Session session, String course_code, String session_id) throws SQLException {
@@ -131,7 +174,7 @@ public class EnrollmentDAO {
 
         if (!checkNotConflict(student, session, course_code, session_id)) {
             pass = false;
-            errorMessage = "There is a conflict with another enrolled course (weekday and time)";
+            errorMessage = "There is a conflict with another enrolled course (weekday and time) : " + course_code + "-" + session_id;
         }
         if (pass) {
             return "All checks passed.";
@@ -205,7 +248,7 @@ public class EnrollmentDAO {
                 int number = rs.getInt("Number");
                 System.out.println(number);
 
-                if (number > 3) {
+                if (number > 2) {
                     return false;
                 }
 
@@ -224,27 +267,47 @@ public class EnrollmentDAO {
             //"SELECT session.weekday, session.time FROM enrollment WHERE session.course_code = ? AND session.session_id = ?" 
             stmt.setString(1, student.getStudentID());
             ResultSet rs = stmt.executeQuery();
-
+            ArrayList<String> time_table = new ArrayList<String>();
             // iv) There is no conflict in the course day and time with other courses that he has enrolled in.
             while (rs.next()) {
-
                 String courseCode = rs.getString("course_code");
                 session_id = rs.getString("session_id");
-
-                
                 session = new SessionDAO(conn).getSessionByID(courseCode, session_id);
                 TimeOfDay time = session.getTime();
                 Weekday week = session.getWeekday();
-
-                if (!week.equals(session.getWeekday()) || !time.equals(session.getTime())) {
-                    return false; // course time and weekday are confused
+                String time_string = time.toString();
+                String week_string = week.toString();
+                String output = time_string + week_string;
+                time_table.add(output);
+            }
+            
+            System.out.println(time_table);
+            String code = session.getCourseCode();
+            String id = session.getSessionID();
+            System.out.println(course_code+session_id);
+            System.out.println(code+id);
+            for (String time1 : time_table) {
+                String session_time_week = new SessionDAO(conn).findSessionByCode(course_code).getTime().toString()+ new SessionDAO(conn).findSessionByCode(course_code).getWeekday().toString();
+                System.out.println(session_time_week);
+                if (session_time_week.equals(time1)) {
+                    System.out.println("WHAT?1");
+                    return false;
+                    
+                } else {
+                    System.out.println("WHAT?2");
+                    return true;
                 }
             }
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return true;
+    }
+
+    public void InputData(String input) throws SQLException {
+        PreparedStatement stmt = conn.prepareStatement(input);
+        stmt.executeUpdate();
+        System.out.println(input);
     }
 
 }
