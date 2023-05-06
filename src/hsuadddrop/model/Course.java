@@ -14,9 +14,7 @@ public class Course {
         this.courseCode = courseCode;
         this.sessions = new ArrayList<>();
     }
-
-
-
+    
     public String getCourseName() {
         return courseName;
     }

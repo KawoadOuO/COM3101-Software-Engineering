@@ -17,6 +17,7 @@ import java.awt.GridLayout;
 import java.sql.Connection;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Hashtable;
@@ -253,7 +254,6 @@ public class Controller {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-
     }
 
     public void addCourse() throws SQLException {
@@ -403,21 +403,29 @@ public class Controller {
                     Session sessionDAO = new SessionDAO(conn).getSessionByID(courseCode, session);
 
                     new EnrollmentDAO(conn).dropEnrollment(student, sessionDAO);
-                    System.out.println("Remove OK");
-
-                    displaySuccessMessage("Drop Module Successfully for " + view.getStudentID()
+                    try{displaySuccessMessage("Drop Module Successfully for " + view.getStudentID()
                             + "\nModule Code: " + courseCode
                             + "\nModule Name: " + new CourseDAO(conn).getCourseByCourseCode(courseCode).getCourseName()
-                            + "\nSession: " + session);
+                            + "\nSession: " + session);}
+                
+                catch(SQLException e){
+                    throw new RuntimeException(e);
+                    }
+                        
+                    }
+
+                    
                     break;
 
-                }
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
+                
+            } 
+            catch(SQLException e){
+                    throw new RuntimeException(e);
+                    }
 
         }
     }
+    
 
     public void addDropCourse() throws SQLException {
 
@@ -512,9 +520,15 @@ public class Controller {
                     Session session_add = new SessionDAO(conn).getSessionByID(add_courseCode, add_session);
                     Session session_drop = new SessionDAO(conn).getSessionByID(drop_courseCode, drop_session);
                     String checkMessage = new EnrollmentDAO(conn).checkALL(student, session_add, add_courseCode, add_session);
+                    
 
                     if (checkMessage.equals("All checks passed.")) {
-                        new AddDropEntryDAO(conn).addEntry(new AddDropEntry(student, session_add, session_drop));
+                        
+                        
+                        new EnrollmentDAO(conn).addEnrollment(student, session_add); 
+                        new EnrollmentDAO(conn).dropEnrollment(student, session_drop);
+                        
+                        //new AddDropEntryDAO(conn).addEntry(new AddDropEntry(student, session_add, session_drop));
                         view.displaySuccessMessage("Add/Drop Module Request Made Successfully for " + view.getStudentID()
                                 + "\nAdd Module Code: " + add_courseCode
                                 + "\nAdd Module Name: " + new CourseDAO(conn).getCourseByCourseCode(add_courseCode).getCourseName()
@@ -528,7 +542,6 @@ public class Controller {
                         displayErrorMessage(checkMessage);
                         continue;
                     }
-
                 }
             } catch (SQLException e) {
                 throw new RuntimeException(e);
@@ -672,22 +685,34 @@ public class Controller {
                     if (!new CourseDAO(conn).getCoursesWithSessions().isEmpty()) {
 
                         List<Course> course = new CourseDAO(conn).getCoursesWithSessions();
-                        List<Student> allstudent = new StudentDAO(conn).getAllStudents().stream().filter(s -> s.getRegisteredSessions().contains(session)).collect(Collectors.toList());
-
+                        // List<Student> allstudent = new StudentDAO(conn).getAllStudents().stream().filter(s -> s.getRegisteredSessions().contains(session)).collect(Collectors.toList());
+                        List<Student> allstudent2 = new StudentDAO(conn).getAllStudents().stream().collect(Collectors.toList());
+                        List<Student> allstudent = new ArrayList<>();
+                        for (Student student : allstudent2){
+                            for(Session s :student.getRegisteredSessions() ){
+                                if(s.getCourseCode().equals(course_code)&&s.getSessionID().equals(session_id)){
+                                    allstudent.add(student);
+                                }
+                            }
+                        }
+                        
+                        System.out.println("student:");
+                        System.out.println(allstudent);
                         if (!course.isEmpty()) {
-
+                                
                             String course_name = new CourseDAO(conn).getCourseByCourseCode(course_code).getCourseName();
                             Weekday weekday = session.getWeekday();
                             TimeOfDay time = session.getTime();
                             String teacher = session.getTeacher();
                             int capacity = session.getCapacity();
-
+                            System.out.println("add row???????");
                             for (Student student : allstudent) {
                                 String student_id = student.getStudentID();
                                 String student_name = student.getStudentName();
                                 String student_gender = student.getGender();
                                 String[] row = {student_id, student_name, student_gender};
                                 model.addRow(row);
+                                System.out.println("add row?");
                             }
                             JTable table = new JTable(model);
                             TableColumn courseNameColumn = table.getColumnModel().getColumn(2);

@@ -77,7 +77,6 @@ public class HSUsystemMain {
                 } catch (SQLException ex) {
                     Logger.getLogger(HSUsystemMain.class.getName()).log(Level.SEVERE, null, ex);
                 }
-
             }
         });
 

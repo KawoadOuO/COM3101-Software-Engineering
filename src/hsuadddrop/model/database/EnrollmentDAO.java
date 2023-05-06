@@ -62,8 +62,10 @@ public class EnrollmentDAO {
         String courseCode = session.getCourseCode();
         String sessionID = session.getSessionID();
 
-        PreparedStatement statement = conn.prepareStatement("SELECT * FROM enrollment WHERE session = ?");
+        PreparedStatement statement = conn.prepareStatement("SELECT * FROM enrollment WHERE course_code = ? AND session_id = ? ");
+        
         statement.setString(1, session.getCourseCode());
+        statement.setString(2, session.getSessionID());
         ResultSet rs = statement.executeQuery();
 
         List<Enrollment> enrollments = new ArrayList<>();
@@ -74,10 +76,6 @@ public class EnrollmentDAO {
         }
         return enrollments;
     }
-
-//        if (!new StudentDAO(conn).checkRegistered(session)) {
-//
-//        }
     public void addEnrollment(Student student, Session session) throws SQLException {
         try {
             if (!checkNotSame(student, session.getCourseCode(), session.getSessionID())) {

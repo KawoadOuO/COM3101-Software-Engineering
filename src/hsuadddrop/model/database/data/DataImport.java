@@ -98,8 +98,7 @@ public class DataImport {
                         // show summary popup
                         String message = String.format("Imported %d rows into %d tables", totalRowsAffected, totalTables);
                         JOptionPane.showMessageDialog(null, message, "Import complete", JOptionPane.INFORMATION_MESSAGE);
-                        // Re-enable auto-commit after import
-                        connection.setAutoCommit(true);
+
                     } catch (SQLException e) {
                         e.printStackTrace(); 
                     }
