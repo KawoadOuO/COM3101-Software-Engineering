@@ -28,7 +28,7 @@ public class EnrollmentDAO {
         try {
             //String sql = "SELECT * FROM course c, session s WHERE c.course_code = s.course_code";
             PreparedStatement statement = conn.prepareStatement("SELECT * FROM enrollment e, student st, session se "
-                    + "WHERE e.student_id = st.student_id, e.Session = se.Session");
+                    + "WHERE e.student_id = st.student_id AND e.session_id = se.session_id AND st.student_id = ?");
             statement.setString(1, student.getStudentID());
             ResultSet rs = statement.executeQuery();
             while (rs.next()) {
@@ -164,7 +164,7 @@ public class EnrollmentDAO {
         }
         if (!checkNotFull(student, session, course_code, session_id)) {
             pass = false;
-            errorMessage = "The esssion is full";
+            errorMessage = "The session is full, placing the student on the wait-list.";
         }
 
         if (!checkNotOverThree(student)) {

@@ -11,7 +11,7 @@ public enum Weekday {
     MONDAY("Mon"),
     TUESDAY("Tue"),
     WEDNESDAY("Wed"),
-    THURSDAY("Thu"),
+    THURSDAY("Thur"),
     FRIDAY("Fri"),
     SATURDAY("Sat");
 

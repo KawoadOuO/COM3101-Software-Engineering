@@ -71,6 +71,7 @@ public class HSUsystemMain {
 
                 controller.setView(view);
                 view.setVisible(true);
+                controller.login();
                 //controller.login();
                 try {
                     controller.updateCourse() ;
