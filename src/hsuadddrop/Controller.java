@@ -52,66 +52,21 @@ public class Controller {
                 if (entry.getStatus() != Status.PENDING) {
                     continue;
                 }
-                Student student = entry.getStudent();
-                Session sessionToAdd = entry.getSessionToAdd();
-                Session sessionToDrop = entry.getSessionToDrop();
-                if (sessionToAdd != null && sessionToDrop != null) {
-                    // add/drop can fail if the target session is full
-                    if (sessionToAdd.getEnrolledStudents().size() >= sessionToAdd.getCapacity()) {
-                        entry.setStatus(Status.REJECTED);
-                        entry.setReason("Session is full");
-                    } else {
-                        student.addSession(sessionToAdd);
-                        student.dropSession(sessionToDrop);
-                        entry.setStatus(Status.APPROVED);
-                    }
-                } else if (sessionToAdd == null && sessionToDrop != null) {
-                    // it is always possible to drop a session
-                    student.dropSession(sessionToDrop);
-                } else if (sessionToAdd != null && sessionToDrop == null) {
-                    // check the capacity only
-                    if (sessionToAdd.getEnrolledStudents().size() >= sessionToAdd.getCapacity()) {
-                        entry.setStatus(Status.REJECTED);
-                        entry.setReason("Session is full");
-                    } else {
-                        student.addSession(sessionToAdd);
-                        entry.setStatus(Status.APPROVED);
-                    }
+
+                Session target = entry.getSessionToAdd();
+                // check if target is full, if so, leave it pending
+                if (target.getEnrolledStudents().size() >= target.getCapacity()) {
+                    continue;
                 }
+
+                // set the entry to success
+                entry.setStatus(Status.APPROVED);
+                new AddDropEntryDAO(DatabaseConnection.getInstance().getConnection()).updateEntryStatus(entry);
+
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    public boolean canMakeAddDropEntry(Student student, Session sessionToAdd, Session sessionToDrop) {
-        // check if the student is already registered for the session to add
-        for (Session session : student.getRegisteredSessions()) {
-            if (sessionToAdd.equals(session)) {
-                displayErrorMessage("Student is already registered for the session to add");
-                return false;
-            }
-        }
-        // check if the student is already registered for the session to drop
-        if (!student.getRegisteredSessions().contains(sessionToDrop)) {
-            displayErrorMessage("Student is not registered for the session to drop");
-            return false;
-        }
-        // there is 3 case for checking the registration limit
-        // 1. if the student is adding a session
-        // 2. if the student is dropping a session
-        // 3. if the student is swapping a session
-        // check if the student is adding a session
-        if (sessionToAdd != null && sessionToDrop == null) {
-            // check if the student is already registered 6 sessions
-            if (student.getRegisteredSessions().size() >= 6) {
-                displayErrorMessage("Student is already registered for 6 sessions");
-                return false;
-            }
-        }
-        // show success message
-        displaySuccessMessage("Add/drop entry created successfully");
-        return true;
     }
 
     public String getTime() {
@@ -375,17 +330,22 @@ public class Controller {
                     addModuleDisplayed = true;
 
                     Student student = new StudentDAO(conn).getStudentByID(view.getStudentID());
-                    Session sessionDAO = new SessionDAO(conn).getSessionByID(courseCode, session);
+                    Session sessionToAdd = new SessionDAO(conn).getSessionByID(courseCode, session);
 
-                    String checkMessage = new EnrollmentDAO(conn).checkALL(student, sessionDAO, courseCode, session);
+                    String checkMessage = new EnrollmentDAO(conn).checkALL(student, sessionToAdd, courseCode, session);
                     if (checkMessage.equals("All checks passed.")) {
-                        new EnrollmentDAO(conn).addEnrollment(student, sessionDAO);
+                        new EnrollmentDAO(conn).addEnrollment(student, sessionToAdd);
                         displaySuccessMessage("Add Module Successfully for " + view.getStudentID()
                                 + "\nModule Code: " + courseCode
                                 + "\nModule Name: " + new CourseDAO(conn).getCourseByCourseCode(courseCode).getCourseName()
-                                + "\nSession: " + sessionDAO);
+                                + "\nSession: " + sessionToAdd);
                         break;
                     } else {
+                        if (checkMessage.equals("The session is full, placing the student on the wait-list.")) {
+                            // add pending adddrop entry
+                            AddDropEntry addDropEntry = new AddDropEntry(student, sessionToAdd, null);
+                            new AddDropEntryDAO(conn).addEntry(addDropEntry);
+                        }
                         displayErrorMessage(checkMessage);
                         continue;
                     }
@@ -590,6 +550,11 @@ public class Controller {
                                 + "\nDrop Session: " + drop_session);
                         break;
                     } else {
+                        if (checkMessage.equals("The session is full, placing the student on the wait-list.")) {
+                            // add pending adddrop entry
+                            AddDropEntry addDropEntry = new AddDropEntry(student, session_add, null);
+                            new AddDropEntryDAO(conn).addEntry(addDropEntry);
+                        }
                         displayErrorMessage(checkMessage);
                         continue;
                     }
