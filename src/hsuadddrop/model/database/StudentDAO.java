@@ -49,7 +49,6 @@ public class StudentDAO {
             return null;
         }
     }
-    
 
     public List<Student> getAllStudents() throws SQLException {
         List<Student> students = new ArrayList<>();
@@ -67,8 +66,8 @@ public class StudentDAO {
     public List<Session> getRegisteredSessions(Student student) {
         return new SessionDAO(conn).getRegisteredSessions(student);
     }
-    
-    public boolean checkRegistered(Student student, Session session){
+
+    public boolean checkRegistered(Student student, Session session) {
         return getRegisteredSessions(student).contains(session);
     }
 
@@ -78,7 +77,6 @@ public class StudentDAO {
         stmt.setString(2, sessionToAdd.getCourseCode());
         stmt.setString(3, sessionToAdd.getSessionID());
         stmt.executeQuery();
-
     }
 
     public void dropSession(Student student, Session sessionToDrop) throws SQLException {
@@ -87,6 +85,5 @@ public class StudentDAO {
         stmt.setString(2, sessionToDrop.getCourseCode());
         stmt.setString(3, sessionToDrop.getSessionID());
         stmt.executeQuery();
-
     }
 }

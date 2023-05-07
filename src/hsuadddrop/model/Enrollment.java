@@ -1,15 +1,19 @@
 package hsuadddrop.model;
 
 public class Enrollment {
+
     private String student_id;
     private String course_code;
     private String session_id;
 
+    //Create an empty Enrollment object to transfer student_id, course_code and session_id;
+    
     public Enrollment(String StudentID, String Code, String SessionID) {
         this.student_id = StudentID;
         this.course_code = Code;
         this.session_id = SessionID;
     }
+
     public String getStudent_id() {
         return student_id;
     }
@@ -33,10 +37,8 @@ public class Enrollment {
     public void setSession_id(String session_id) {
         this.session_id = session_id;
     }
-    
+
     public String toString() {
-        return "Enrollment {" + "StudentID=" + student_id + ", CourseCode=" + course_code  + ", Session_id=" + session_id + '}';
-        //return "Course{" + "courseCode=" + courseCode + ", courseName=" + courseName +  ", session" + sessions + '}';
+        return "Enrollment {" + "StudentID=" + student_id + ", CourseCode=" + course_code + ", Session_id=" + session_id + '}';
     }
-    
 }

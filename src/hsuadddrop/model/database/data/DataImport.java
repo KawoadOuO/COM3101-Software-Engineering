@@ -100,13 +100,11 @@ public class DataImport {
                         JOptionPane.showMessageDialog(null, message, "Import complete", JOptionPane.INFORMATION_MESSAGE);
 
                     } catch (SQLException e) {
-                        e.printStackTrace(); 
                     }
                 }
             }
 
         } catch (IOException e) {
-            e.printStackTrace();
         }
 
     }

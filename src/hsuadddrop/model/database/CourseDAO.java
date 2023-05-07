@@ -47,13 +47,13 @@ public class CourseDAO {
         //execute the insert statement
         stmt.executeUpdate();
     }
-    
+
     public Course getCourseByCourseCode(String courseCode) throws SQLException {
+        //prepare the select statement
         String sql = "SELECT * FROM course WHERE course_code = ?";
         PreparedStatement statement = connection.prepareStatement(sql);
-
         statement.setString(1, courseCode);
-        
+
         //execute the select statement
         ResultSet rs = statement.executeQuery();
 
@@ -100,7 +100,6 @@ public class CourseDAO {
 
     public List<Course> getCoursesWithSessions() throws SQLException {
         //prepare the select statement
-        //String sql = "SELECT DISTINCT course_code, course_name FROM course";
         String sql = "SELECT * FROM course c, session s WHERE c.course_code = s.course_code";
         PreparedStatement stmt = connection.prepareStatement(sql);
 
@@ -127,27 +126,37 @@ public class CourseDAO {
     }
 
     public Course getCourseByCodeSection(String courseCode, String sessionID) throws SQLException {
+        //prepare the select statement
         PreparedStatement stmt = connection.prepareStatement("SELECT * FROM course WHERE course_code = ?");
         stmt.setString(1, courseCode);
         stmt.setString(2, sessionID);
+
+        //execute the select statement
         ResultSet rs = stmt.executeQuery();
+
+        //create a list of Course objects and return it
         List<Course> courses = new ArrayList<>();
         while (rs.next()) {
             courseCode = rs.getString("course_code");
             String courseName = rs.getString("course_name");
             Course course = new Course(courseName, courseCode);
-            
+
             course.setSessions(new SessionDAO(connection).getSessionsForCourse(courseCode));
             courses.add(course);
         }
         return null;
-        
+
     }
 
     public List<Student> getEnrolledStudents(Session session) {
+        //create a list of Student objects and return it
         List<Student> students = new ArrayList<>();
         try {
-            PreparedStatement stmt = connection.prepareStatement("SELECT * FROM enrollment");
+            //prepare the select statement
+            PreparedStatement stmt = connection.prepareStatement("SELECT * FROM enrollment WHERE session_id = ? AND course_code = ?");
+             stmt.setString(1, session.getSessionID());
+             stmt.setString(2, session.getCourseCode());
+            //execute the select statement
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 String studentID = rs.getString("student_id");
@@ -155,7 +164,6 @@ public class CourseDAO {
                 students.add(student);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
         }
         return students;
     }

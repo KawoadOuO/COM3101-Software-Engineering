@@ -8,6 +8,8 @@ public class AddDropEntry {
     private Status status;
     private String reason;
 
+      //Create a empty AddDropEntry object to transfter courseName, courseCode and sessions ArrayList<>;
+    
     public AddDropEntry(Student student, Session sessionToAdd, Session sessionToDrop) {
         this.student = student;
         this.sessionToAdd = sessionToAdd;

@@ -23,7 +23,7 @@ public class DatabaseConnection {
             if (!dbFile.exists()) {
                 firstTimeSetup = true;
             }
-//             Connect to the SQLite database file
+            // Connect to the SQLite database file
             String url = "jdbc:sqlite:./adddrop.db";
             connection = DriverManager.getConnection(url);
             // check table exists
@@ -47,7 +47,6 @@ public class DatabaseConnection {
                 }
             }
         } catch (ClassNotFoundException | SQLException e) {
-            e.printStackTrace();
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }

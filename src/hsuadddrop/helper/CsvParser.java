@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 public class CsvParser {
+
     private final String delimiter;
     private String missingValue = null;
 
@@ -21,10 +22,6 @@ public class CsvParser {
         this.delimiter = delimiter;
     }
 
-    public void setMissingValue(String missingValue) {
-        this.missingValue = missingValue;
-    }
-
     public List<Map<String, String>> parse(File file) throws IOException {
         List<Map<String, String>> data = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
@@ -33,7 +30,7 @@ public class CsvParser {
             String line;
             while ((line = reader.readLine()) != null) {
                 line = line.trim();
-                if (line.isEmpty()) {
+                if (line.isEmpty() || line.trim().isEmpty()) {
                     continue;
                 }
                 if (line.startsWith("Table:")) {
@@ -59,9 +56,7 @@ public class CsvParser {
                         }
                         String columnName = entry.getKey();
                         if (!(value == null)) {
-                            if (value.isEmpty()) {
-                                value = missingValue; // Replace empty value with missing value
-                            } else if (value.equals("NULL")) {
+                            if (value.equals("NULL")) {
                                 value = null; // Replace "NULL" with null
                             }
                         }

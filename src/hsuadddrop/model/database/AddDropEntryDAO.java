@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AddDropEntryDAO {
+
     private final Connection conn;
 
     public AddDropEntryDAO(Connection conn) {
@@ -19,8 +20,11 @@ public class AddDropEntryDAO {
     }
 
     public List<AddDropEntry> getAllEntries() throws SQLException {
+        //prepare the select statement
         PreparedStatement stmt = conn.prepareStatement("SELECT * FROM add_drop_entry");
+        //execute the select statement
         ResultSet rs = stmt.executeQuery();
+        //create a list of Course objects and return it
         List<AddDropEntry> entries = new ArrayList<>();
         while (rs.next()) {
             String studentId = rs.getString("student_id");
@@ -47,6 +51,7 @@ public class AddDropEntryDAO {
     }
 
     public void addEntry(AddDropEntry entry) throws SQLException {
+        //prepare the select statement
         PreparedStatement stmt = conn.prepareStatement("INSERT INTO add_drop_entry(student_id, course_code_to_add, course_code_to_drop, session_to_add, session_to_drop, status, reason) VALUES (?, ?, ?, ?, ?, ?, ?)");
         stmt.setString(1, entry.getStudent().getStudentID());
         stmt.setString(2, entry.getSessionToAdd().getCourseCode());
@@ -55,10 +60,12 @@ public class AddDropEntryDAO {
         stmt.setString(5, entry.getSessionToDrop().getSessionID());
         stmt.setString(6, entry.getStatus().toString());
         stmt.setString(7, entry.getReason());
+        //execute the insert statement
         stmt.executeUpdate();
     }
 
     public void updateEntryStatus(AddDropEntry entry) throws SQLException {
+        //prepare the update statement
         PreparedStatement stmt = conn.prepareStatement("UPDATE add_drop_entry SET status = ? WHERE student_id = ? AND course_code_to_add = ? AND course_code_to_drop = ? AND session_to_add = ? AND session_to_drop = ?");
         stmt.setString(1, entry.getStatus().toString());
         stmt.setString(2, entry.getStudent().getStudentID());
@@ -66,6 +73,7 @@ public class AddDropEntryDAO {
         stmt.setString(4, entry.getSessionToDrop().getCourseCode());
         stmt.setString(5, entry.getSessionToAdd().getSessionID());
         stmt.setString(6, entry.getSessionToDrop().getSessionID());
+        //execute the update statement
         stmt.executeUpdate();
     }
 }

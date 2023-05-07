@@ -1,12 +1,5 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package hsuadddrop.model;
 
-/**
- * @author lukaon
- */
 public enum TimeOfDay {
     MORNING("Morning"),
     AFTERNOON("Afternoon"),
@@ -26,10 +19,8 @@ public enum TimeOfDay {
         }
         throw new IllegalArgumentException("No enum constant with display name: " + displayName);
     }
-
     @Override
     public String toString() {
         return displayName;
     }
-
 }

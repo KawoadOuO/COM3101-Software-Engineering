@@ -9,8 +9,7 @@ import hsuadddrop.model.database.SessionDAO;
 import hsuadddrop.model.database.StaffDAO;
 import hsuadddrop.model.database.StudentDAO;
 import hsuadddrop.model.database.data.DataImport;
-import hsuadddrop.model.database.data.EditTable;
-import hsuadddrop.view.MainUI;
+import hsuadddrop.view.View;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -21,10 +20,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.swing.Box;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -38,10 +37,10 @@ import javax.swing.table.TableColumn;
 
 public class Controller {
 
-    MainUI view;
+    View view;
     public Component rootPane;
 
-    public void setView(MainUI v) {
+    public void setView(View v) {
         this.view = v;
     }
 
@@ -52,10 +51,9 @@ public class Controller {
                 if (entry.getStatus() != Status.PENDING) {
                     continue;
                 }
-
                 Session target = entry.getSessionToAdd();
                 // check if target is full, if so, leave it pending
-                if (target.getEnrolledStudents().size() >= target.getCapacity()) {
+                if (checkNotFull(target)) {
                     continue;
                 }
 
@@ -85,13 +83,12 @@ public class Controller {
         return time;
 
     }
-    public void updateTimeAndName(String staffID) throws SQLException{
+
+    public void updateTimeAndName(String staffID) throws SQLException {
         view.setTimeText(getTime());
         view.setNameText(getStaffName(staffID));
-    
+
     }
-    
-    
 
     public boolean login(String staffID, String password) {
         // check credentials in database
@@ -103,7 +100,7 @@ public class Controller {
                 if (loginStaff.getPassword().equals(password)) {
 
                     view.setNameText("Staff : " + getStaffName(staffID));
-                    
+
                     view.setTimeText(getTime());
 
                     return true;
@@ -142,6 +139,10 @@ public class Controller {
     }
 
     public void displayCourseInfo(String message, JPanel panel) {
+        JOptionPane.showMessageDialog(view, panel, message, JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    public void displayPendingInfo(String message, JPanel panel) {
         JOptionPane.showMessageDialog(view, panel, message, JOptionPane.INFORMATION_MESSAGE);
     }
 
@@ -234,6 +235,48 @@ public class Controller {
                 }
 
             }
+
+        }
+    }
+
+    public void showPendingCourse() throws SQLException {
+        Connection conn = DatabaseConnection.getInstance().getConnection();
+        DefaultTableModel model = (DefaultTableModel) new DefaultTableModel();
+        model.addColumn("Student ID");
+        model.addColumn("Student Name");
+        model.addColumn("Add Course Code");
+        model.addColumn("Add Session ID");
+        model.addColumn("Drop Course Code");
+        model.addColumn("Drop Session ID");
+        List<AddDropEntry> addDropEntry = new AddDropEntryDAO(conn).getAllEntries();
+        if (addDropEntry != null) {
+            for (AddDropEntry addDrop : addDropEntry) {
+                Student student = addDrop.getStudent();
+                Session addCourse = addDrop.getSessionToAdd();
+                Session dropCourse = addDrop.getSessionToDrop();
+
+                String studentID = student.getStudentID();
+                String studentName = student.getStudentName();
+                String addCourseCode = addCourse.getCourseCode();
+                String addSessionID = addCourse.getSessionID();
+                String dropCourseCode = dropCourse.getCourseCode();
+                String dropSessionID = dropCourse.getSessionID();
+
+                String[] row = {studentID, studentName, addCourseCode, addSessionID, dropCourseCode, dropSessionID};
+                model.addRow(row);
+            }
+            JTable table = new JTable(model);
+            JScrollPane scrollPane = new JScrollPane(table);
+            String message = "Pending List:";
+            JButton bt_pending = new JButton("Pending Course");
+            JPanel panel = new JPanel();
+            panel.add(scrollPane);
+            panel.add(bt_pending);
+            panel.add(Box.createVerticalStrut(5));
+            bt_pending.addActionListener(e -> {
+               view.displayErrorMessage("Only can show the pending list. \n Haven't implemented pending function");
+            });
+            displayPendingInfo(message, panel);
 
         }
     }
@@ -332,13 +375,13 @@ public class Controller {
                     Student student = new StudentDAO(conn).getStudentByID(view.getStudentID());
                     Session sessionToAdd = new SessionDAO(conn).getSessionByID(courseCode, session);
 
-                    String checkMessage = new EnrollmentDAO(conn).checkALL(student, sessionToAdd, courseCode, session);
+                    String checkMessage = checkALL(student, sessionToAdd, courseCode, session);
                     if (checkMessage.equals("All checks passed.")) {
                         new EnrollmentDAO(conn).addEnrollment(student, sessionToAdd);
                         displaySuccessMessage("Add Module Successfully for " + view.getStudentID()
                                 + "\nModule Code: " + courseCode
                                 + "\nModule Name: " + new CourseDAO(conn).getCourseByCourseCode(courseCode).getCourseName()
-                                + "\nSession: " + sessionToAdd);
+                                + "\nSession: " + sessionToAdd.getSessionID());
                         break;
                     } else {
                         if (checkMessage.equals("The session is full, placing the student on the wait-list.")) {
@@ -414,22 +457,21 @@ public class Controller {
 
                     Student student = new StudentDAO(conn).getStudentByID(view.getStudentID());
                     Session session_drop = new SessionDAO(conn).getSessionByID(course_code, session_id);
-                    String checkMessage = new EnrollmentDAO(conn).checkHadRegisteredSession(student, course_code, session_id);
 
-                    if (checkMessage.equals("Have Course")) {
+                    if (checkNotSame(student, session_drop)) {
                         try {
-                            System.out.println("Dropping?");
                             new EnrollmentDAO(conn).dropEnrollment(student, session_drop);
                             displaySuccessMessage("Drop Module Successfully for " + view.getStudentID()
                                     + "\nModule Code: " + course_code
                                     + "\nModule Name: " + new CourseDAO(conn).getCourseByCourseCode(course_code).getCourseName()
                                     + "\nSession: " + session_id);
+
                         } catch (SQLException e) {
                             throw new RuntimeException(e);
                         }
 
                     } else {
-                        displayErrorMessage(checkMessage);
+                        displayErrorMessage("Haven't register this code : " + session_drop);
                     }
 
                 }
@@ -532,8 +574,12 @@ public class Controller {
 
                     Session session_add = new SessionDAO(conn).getSessionByID(add_courseCode, add_session);
                     Session session_drop = new SessionDAO(conn).getSessionByID(drop_courseCode, drop_session);
-                    String checkMessage = new EnrollmentDAO(conn).checkALL(student, session_add, add_courseCode, add_session);
-
+                    String checkMessage = checkALL(student, session_add, add_courseCode, add_session);
+                    System.out.println(session_drop.getEnrolledStudents().size() < session_drop.getCapacity());
+                    System.out.println(session_drop.getEnrolledStudents().size() + " " + session_drop.getCapacity());
+                    if (!checkNotSame(student, session_drop)) {
+                        checkMessage = "Not registered in the drop course";
+                    }
                     if (checkMessage.equals("All checks passed.")) {
 
                         new EnrollmentDAO(conn).addEnrollment(student, session_add);
@@ -549,18 +595,21 @@ public class Controller {
                                 + "\nDrop Module Name: " + new CourseDAO(conn).getCourseByCourseCode(drop_courseCode).getCourseName()
                                 + "\nDrop Session: " + drop_session);
                         break;
-                    } else {
-                        if (checkMessage.equals("The session is full, placing the student on the wait-list.")) {
-                            // add pending adddrop entry
-                            AddDropEntry addDropEntry = new AddDropEntry(student, session_add, null);
-                            new AddDropEntryDAO(conn).addEntry(addDropEntry);
-                        }
-                        displayErrorMessage(checkMessage);
-                        continue;
                     }
+
+                    if (checkMessage.equals("The session is full")) {
+                        // add pending adddrop entry
+                        AddDropEntry addDropEntry = new AddDropEntry(student, session_add, session_drop);
+                        new AddDropEntryDAO(conn).addEntry(addDropEntry);
+                        checkMessage = "The session is full, placing the student on the wait-list.";
+                        view.displayErrorMessage(checkMessage);
+                        break;
+                    }
+                    view.displayErrorMessage(checkMessage);
                 }
             } catch (SQLException e) {
                 throw new RuntimeException(e);
+
             }
         }
     }
@@ -753,5 +802,80 @@ public class Controller {
             } catch (SQLException e) {
             }
         }
+    }
+
+    public String checkALL(Student student, Session session, String course_code, String session_id) throws SQLException {
+        boolean pass = true;
+        String errorMessage = "";
+        //check All rule i ,ii, iii, iv
+        // only run to th end until all rule return is true(can pass all rule)
+        if (checkNotSame(student, session)) {
+            pass = false;
+            errorMessage = "The student is already enrolled in this Course : " + course_code + session_id;
+            return errorMessage;
+        }
+        if (checkNotFull(session)) {
+            pass = false;
+            errorMessage = "The session is full";
+            return errorMessage;
+        }
+        if (checkNotConflict(student, session)) {
+            pass = false;
+            errorMessage = "There is a conflict with another enrolled course : " + session.getCourseCode() + "-" + session.getSessionID()
+                    + "\nWeekday :" + session.getWeekday() + "\nTime:" + session.getTime();
+            return errorMessage;
+        }
+        if (checkNotOverThree(student)) {
+            pass = false;
+            errorMessage = "The student has exceeded the maximum course enrollment limit.(" + student.getRegisteredSessions().size() + ")";
+            return errorMessage;
+        }
+        if (pass) {
+            return "All checks passed.";
+        } else {
+            return errorMessage;
+        }
+    }
+
+    public boolean checkNotSame(Student student, Session session) throws SQLException {
+        List<Session> sessionRegistered = student.getRegisteredSessions();
+        String course_code = session.getCourseCode();
+        String session_id = session.getSessionID();
+        for (Session enrolledSession : sessionRegistered) {
+            String enrolledCode = enrolledSession.getCourseCode();
+            String enrolledID = enrolledSession.getSessionID();
+            if (enrolledCode.equals(course_code) && enrolledID.equals(session_id)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean checkNotFull(Session session) {
+        return session.getEnrolledStudents().size() >= session.getCapacity();
+    }
+
+    public boolean checkNotOverThree(Student student) throws SQLException {
+        Connection conn = DatabaseConnection.getInstance().getConnection();
+        int size = student.getRegisteredSessions().size();
+        return (size >= 3);
+    }
+
+    public boolean checkNotConflict(Student student, Session session) {
+        TimeOfDay time = session.getTime();
+        Weekday week = session.getWeekday();
+        String time_string = time.toString();
+        String week_string = week.toString();
+
+        List<Session> sessionRegistered = student.getRegisteredSessions();
+
+        for (Session enrolledSession : sessionRegistered) {
+            String enrolled_time = enrolledSession.getTime().toString();
+            String enrolled_week = enrolledSession.getWeekday().toString();
+            if (time_string.equals(enrolled_time) && week_string.equals(enrolled_week)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

@@ -7,10 +7,13 @@ import java.sql.SQLException;
 import java.util.List;
 
 public class Student {
+
     private String studentID;
     private String gender;
     private String studentName;
 
+    //Create an empty Student object to transfer studentID, gender and studentName;
+    
     public Student(String studentID, String gender, String studentName) {
         this.studentID = studentID;
         this.gender = gender;

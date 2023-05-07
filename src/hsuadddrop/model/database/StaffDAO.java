@@ -11,11 +11,9 @@ import java.util.List;
 
 public class StaffDAO {
     private final Connection conn;
-
     public StaffDAO(Connection conn) {
         this.conn = conn;
     }
-
 
     public Staff findStaffById(String staffId) throws SQLException {
         PreparedStatement stmt = conn.prepareStatement("SELECT * FROM staff WHERE staff_id = ?");
@@ -31,7 +29,6 @@ public class StaffDAO {
         }
     }
 
-
     public boolean authenticateStaff(String staffId, String password) throws SQLException {
         PreparedStatement stmt = conn.prepareStatement("SELECT * FROM staff WHERE staff_id = ? AND password = ?");
         stmt.setString(1, staffId);
@@ -39,7 +36,6 @@ public class StaffDAO {
         ResultSet rs = stmt.executeQuery();
         return rs.next();
     }
-
 
     public List<Staff> getAllStaff() throws SQLException {
         List<Staff> staffList = new ArrayList<>();
@@ -57,7 +53,6 @@ public class StaffDAO {
         return staffList;
     }
 
-
     public void addStaff(Staff staff) throws SQLException {
         PreparedStatement stmt = conn.prepareStatement("INSERT INTO staff (staff_id, name, password) VALUES (?, ?, ?)");
         stmt.setString(1, staff.getStaffID());
@@ -66,7 +61,6 @@ public class StaffDAO {
         stmt.executeUpdate();
     }
 
-
     public void updateStaff(Staff staff) throws SQLException {
         PreparedStatement stmt = conn.prepareStatement("UPDATE staff SET name = ?, password = ? WHERE staff_id = ?");
         stmt.setString(1, staff.getName());
@@ -74,7 +68,6 @@ public class StaffDAO {
         stmt.setString(3, staff.getStaffID());
         stmt.executeUpdate();
     }
-
 
     public void deleteStaff(Staff staff) throws SQLException {
         PreparedStatement stmt = conn.prepareStatement("DELETE FROM staff WHERE staff_id = ?");

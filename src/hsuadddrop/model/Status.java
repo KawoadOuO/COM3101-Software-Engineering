@@ -19,11 +19,8 @@ public enum Status {
         }
         throw new IllegalArgumentException("No enum constant with display name: " + displayName);
     }
-
     @Override
     public String toString() {
         return displayName;
     }
-
-
 }
