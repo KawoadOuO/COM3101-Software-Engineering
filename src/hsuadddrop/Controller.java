@@ -575,8 +575,6 @@ public class Controller {
                     Session session_add = new SessionDAO(conn).getSessionByID(add_courseCode, add_session);
                     Session session_drop = new SessionDAO(conn).getSessionByID(drop_courseCode, drop_session);
                     String checkMessage = checkALL(student, session_add, add_courseCode, add_session);
-                    System.out.println(session_drop.getEnrolledStudents().size() < session_drop.getCapacity());
-                    System.out.println(session_drop.getEnrolledStudents().size() + " " + session_drop.getCapacity());
                     if (!checkNotSame(student, session_drop)) {
                         checkMessage = "Not registered in the drop course";
                     }
